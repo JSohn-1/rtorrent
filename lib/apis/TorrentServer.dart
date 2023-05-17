@@ -88,10 +88,8 @@ class Torrents {
 
   static Future<List<Torrents>> loadSavedTorrents() async {
     return [
-      Torrents(
-          TransmissionRPC(Creds.domain, Creds.user, Creds.pass)),
-      Torrents(
-          TransmissionRPC(Creds.domain, Creds.user, Creds.pass)),
+      Torrents(TransmissionRPC(Creds.domain, Creds.user, Creds.pass)),
+      Torrents(TransmissionRPC(Creds.domain, Creds.user, Creds.pass)),
     ];
   }
 }
@@ -158,8 +156,12 @@ class _TorrentListState extends State<TorrentList> {
 }
 
 // Box which will contain the torrent server information and will attempt to
-// use the ping() method which is of type Future<bool>. It will have the type of server, followed by a colon and the status code (Which comes from the Status object returned from the future method),  and a box which will
-// be green if the status object's success paramter is true, and red if it is false. This box will be clickable and when clicked take the user to the ErrorPage and will use the inkwell widget to make it clickable.
+// use the ping() method which is of type Future<bool>. It will have the type of
+// server, followed by a colon and the status code (Which comes from the Status
+// object returned from the future method),  and a box which will
+// be green if the status object's success paramter is true, and red if it is
+// false. This box will be clickable and when clicked take the user to the
+// ErrorPage and will use the inkwell widget to make it clickable.
 
 class ServerBox extends StatelessWidget {
   const ServerBox({super.key, required this.server});

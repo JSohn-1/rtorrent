@@ -299,81 +299,126 @@ class TorrentInfo extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.only(right: 10),
                 ),
-                Column(
-                  children: [
-                    Container(
+                Column(children: [
+                  Container(
+                      alignment: Alignment.center,
+                      height: (MediaQuery.of(context).size.width / 4) - 12.5,
+                      width: (MediaQuery.of(context).size.width / 2) - 15,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: const Color.fromARGB(20, 255, 255, 255)),
+                      child: Container(
+                        height: (MediaQuery.of(context).size.width / 4) * 1.5,
+                        width: (MediaQuery.of(context).size.width / 4) * 1.5,
                         alignment: Alignment.center,
-                        height: (MediaQuery.of(context).size.width / 4) - 12.5,
-                        width: (MediaQuery.of(context).size.width / 2) - 15,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: const Color.fromARGB(20, 255, 255, 255)),
-                        child: Container(
-                          height: (MediaQuery.of(context).size.width / 4) * 1.5,
-                          width: (MediaQuery.of(context).size.width / 4) * 1.5,
-                          alignment: Alignment.center,
-                          child: Text(torrent.name,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 20)),
-                        )),
-                    const Padding(padding: EdgeInsets.only(top: 10)),
-                    Container(
-                        height: (MediaQuery.of(context).size.width / 4) - 12.5,
-                        width: (MediaQuery.of(context).size.width / 2) - 15,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: const Color.fromARGB(20, 255, 255, 255)),
-                        child: Row(
+                        child: Text(torrent.name,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 20)),
+                      )),
+                  const Padding(padding: EdgeInsets.only(top: 10)),
+                  Container(
+                    height: (MediaQuery.of(context).size.width / 4) - 12.5,
+                    width: (MediaQuery.of(context).size.width / 2) - 15,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Color.fromRGBO(255, 255, 255, 0.078)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Spacer(),
+                        Icon(
+                          size:
+                              (((MediaQuery.of(context).size.width - 15) / 10)),
+                          Icons.download_rounded,
+                          color: Colors.white,
+                        ),
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.download,
-                                size: (MediaQuery.of(context).size.width) / 8,
-                                color: Colors.blue),
-                            SizedBox(
-                              width: (MediaQuery.of(context).size.width) / 8,
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                runAlignment: WrapAlignment.center,
-                                children: [
-                                  FittedText(
-                                    width: (MediaQuery.of(context).size.width) /
-                                        32,
-                                    // height: (MediaQuery.of(context).size.width) / 16,
-                                    child: Text(
-                                        torrent.getSpeed()['downspeed']![0],
-                                        style: const TextStyle(
-                                            fontSize: 50, color: Colors.white)),
-                                  ),
-                                  FittedText(
-                                    width: (MediaQuery.of(context).size.width) * 0.05,
-                                    child: Text(
-                                        torrent.getSpeed()['downspeed']![1],
-                                        style: const TextStyle(
-                                            fontSize: 50, color: Colors.white)),
-                                  )
-                                ],
+                            Container(
+                              // height:
+                              //     ((MediaQuery.of(context).size.height / 4) - 15) *
+                              //         0.4,
+                              width:
+                                  (((MediaQuery.of(context).size.width - 15) /
+                                      35)),
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: Text(
+                                  '${torrent.getSpeed()['downspeed']![0]}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
-                            const Icon(Icons.upload,
-                                size: 40, color: Colors.blue),
-                            SizedBox(
-                              width: (MediaQuery.of(context).size.width) / 8,
-                              child: Wrap(
-                                alignment: WrapAlignment.center,
-                                children: [
-                                  Text(torrent.getSpeed()['upspeed']![0],
-                                      style: const TextStyle(
-                                          fontSize: 15, color: Colors.white)),
-                                  Text(torrent.getSpeed()['upspeed']![1],
-                                      style: const TextStyle(
-                                          fontSize: 15, color: Colors.white))
-                                ],
+                            Container(
+                              width:
+                                  (((MediaQuery.of(context).size.width - 15) /
+                                      20)),
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: Text(
+                                  torrent.getSpeed()['downspeed']![1],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
                           ],
-                        ))
-                  ],
-                ),
+                        ),
+                        Icon(
+                          size:
+                              (((MediaQuery.of(context).size.width - 15) / 10)),
+                          Icons.upload_rounded,
+                          color: Colors.white,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width:
+                                  (((MediaQuery.of(context).size.width - 15) /
+                                      35)),
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: Text(
+                                  '${torrent.getSpeed()['upspeed']![0]}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width:
+                                  (((MediaQuery.of(context).size.width - 15) /
+                                      20)),
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: Text(
+                                  torrent.getSpeed()['upspeed']![1],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer()
+                      ],
+                    )
+                    /*
+                    child: LayoutBuilder(builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      BoxConstraints cons = BoxConstraints(
+                          maxHeight: constraints.maxHeight,
+                          maxWidth: constraints.maxWidth / 4.0);
+
+                      // if(constraints.maxHeight)
+                      // Align the icons with the text. Size everything to fit the container. If the container becomes too small, place the speed above the units. The order of the items left to right is: download icon, download speed number, download speed unit, upload speed icon, upload speed number, upload speed unit
+                      return }*/
+
+                    ,
+                  )
+                ])
+                // ],
+                // ),
+                ,
                 const Padding(padding: EdgeInsets.only(right: 10)),
               ],
             ),
