@@ -325,7 +325,7 @@ class TorrentInfo extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        const Spacer(),
+                        const Spacer(flex: 2),
                         Icon(
                           size:
                               (((MediaQuery.of(context).size.width - 15) / 10)),
@@ -364,6 +364,7 @@ class TorrentInfo extends StatelessWidget {
                             ),
                           ],
                         ),
+                        const Spacer(),
                         Icon(
                           size:
                               (((MediaQuery.of(context).size.width - 15) / 10)),
@@ -399,7 +400,7 @@ class TorrentInfo extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const Spacer()
+                        const Spacer(flex: 2)
                       ],
                     )
                     /*
