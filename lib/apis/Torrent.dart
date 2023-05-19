@@ -107,7 +107,7 @@ class TorrentBox extends StatelessWidget {
         child: Row(children: [
           Container(
             alignment: Alignment.centerLeft,
-            width: MediaQuery.of(context).size.width / 2,
+            width: MediaQuery.of(context).size.width / 2 - 10,
             child: Container(
                 width: MediaQuery.of(context).size.width / 2,
                 height: MediaQuery.of(context).size.height / 4,
