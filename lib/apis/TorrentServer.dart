@@ -143,7 +143,8 @@ class _TorrentListState extends State<TorrentList> {
                     itemBuilder: (context, index) {
                       return Container(
                           padding: const EdgeInsets.all(8),
-                          child: TorrentBox(torrent: snapshot.data![index]));
+                          child: TorrentBoxPortrait(
+                              torrent: snapshot.data![index]));
                     },
                   )));
         } else if (snapshot.hasError) {

@@ -321,7 +321,7 @@ class TorrentInfo extends StatelessWidget {
                     width: (MediaQuery.of(context).size.width / 2) - 15,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
-                        color: Color.fromRGBO(255, 255, 255, 0.078)),
+                        color: const Color.fromRGBO(255, 255, 255, 0.078)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -434,6 +434,28 @@ class TorrentInfo extends StatelessWidget {
             )
           ]),
         ));
+  }
+}
+
+class TorrentBoxPortrait extends StatelessWidget {
+  const TorrentBoxPortrait({Key? key, required this.torrent}) : super(key: key);
+
+  final Torrent torrent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.width / 4,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(40),
+        color: const Color.fromARGB(20, 255, 255, 255),
+      ),
+      child: Row(
+        children: [],
+      ),
+    );
   }
 }
 
