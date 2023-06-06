@@ -445,17 +445,104 @@ class TorrentBoxPortrait extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.width / 4,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(40),
-        color: const Color.fromARGB(20, 255, 255, 255),
-      ),
-      child: Row(
-        children: [],
-      ),
-    );
+        padding: const EdgeInsets.all(8),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.width / 4,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(40),
+          color: const Color.fromARGB(20, 255, 255, 255),
+        ),
+        child: Row(children: [
+          Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  color: const Color.fromRGBO(255, 255, 255, 0.078)),
+              width: MediaQuery.of(context).size.width / 2 - 15,
+              alignment: Alignment.center,
+              child: Text(torrent.name,
+                  maxLines: 2,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      overflow: TextOverflow.ellipsis))),
+          const Padding(padding: EdgeInsets.only(right: 10)),
+          Container(
+            height: (MediaQuery.of(context).size.width / 4) - 12.5,
+            width: (MediaQuery.of(context).size.width / 2) - 15,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: const Color.fromRGBO(255, 255, 255, 0.078)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const Spacer(flex: 2),
+                Icon(
+                  size: (((MediaQuery.of(context).size.width - 15) / 10)),
+                  Icons.download_rounded,
+                  color: Colors.white,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: (((MediaQuery.of(context).size.width - 15) / 35)),
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Text(
+                          '${torrent.getSpeed()['downspeed']![0]}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: (((MediaQuery.of(context).size.width - 15) / 20)),
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Text(
+                          torrent.getSpeed()['downspeed']![1],
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                Icon(
+                  size: (((MediaQuery.of(context).size.width - 15) / 10)),
+                  Icons.upload_rounded,
+                  color: Colors.white,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: (((MediaQuery.of(context).size.width - 15) / 35)),
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Text(
+                          '${torrent.getSpeed()['upspeed']![0]}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: (((MediaQuery.of(context).size.width - 15) / 20)),
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Text(
+                          torrent.getSpeed()['upspeed']![1],
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(flex: 2),
+              ],
+            ),
+          )
+        ]));
   }
 }
 
