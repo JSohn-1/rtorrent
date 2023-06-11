@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 
 enum Stat {
   downloading,
@@ -83,6 +82,54 @@ class Torrent {
     return ({
       "downspeed": [findownspeed, downspeedUnit],
       "upspeed": [finupspeed, upspeedUnit]
+    });
+  }
+
+  Map<String, List<String>> getDownloaded() {
+    // Find the downloaded in the form of GB/s MB/s or KB/s depending on the speed with the number going to one decimal place and also the total size of the torrent
+    String downloadedUnit = "KB";
+    String sizeUnit = "KB";
+    double downloaded = this.downloaded / 1000;
+    double size = this.size / 1000;
+
+    // print(downloadSpeed);
+
+    if (this.downloaded > 100000000) {
+      downloaded = downloaded / 1000000;
+      downloadedUnit = "GB";
+    } else if (downloaded > 1000) {
+      downloaded = downloaded / 1000;
+      downloadedUnit = "MB";
+    }
+
+    if (this.size > 100000000) {
+      size = size / 1000000;
+      sizeUnit = "GB";
+    } else if (size > 1000) {
+      size = size / 1000;
+      sizeUnit = "MB";
+    }
+
+    // Round the size to 1 decimal place
+    downloaded = double.parse(downloaded.toStringAsFixed(1));
+    size = double.parse(size.toStringAsFixed(1));
+
+    // If the decimal place is 0, remove it
+    String findownloaded = downloaded.toString();
+    String finsize = size.toString();
+
+    // If the decimal place is 0, get the substring without the decimal place
+    if (findownloaded.substring(findownloaded.length - 2) == ".0") {
+      findownloaded = findownloaded.substring(0, findownloaded.length - 2);
+    }
+
+    if (finsize.substring(finsize.length - 2) == ".0") {
+      finsize = finsize.substring(0, finsize.length - 2);
+    }
+
+    return ({
+      "downloaded": [findownloaded, downloadedUnit],
+      "size": [finsize, sizeUnit]
     });
   }
 }
@@ -436,7 +483,7 @@ class TorrentInfo extends StatelessWidget {
         ));
   }
 }
-
+/*
 class TorrentBoxPortrait extends StatelessWidget {
   const TorrentBoxPortrait({Key? key, required this.torrent}) : super(key: key);
 
@@ -464,7 +511,7 @@ class TorrentBoxPortrait extends StatelessWidget {
                   maxLines: 2,
                   style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 10,
+                      fontSize: 15,
                       overflow: TextOverflow.ellipsis))),
           const Padding(padding: EdgeInsets.only(right: 10)),
           Container(
@@ -545,6 +592,133 @@ class TorrentBoxPortrait extends StatelessWidget {
         ]));
   }
 }
+*/
+
+class TorrentBoxPortrait extends StatelessWidget {
+  const TorrentBoxPortrait({Key? key, required this.torrent}) : super(key: key);
+
+  final Torrent torrent;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TorrentInfo(torrent: torrent)));
+      },
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.width / 4,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: const Color.fromARGB(20, 255, 255, 255),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width - 60,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Name
+                      Container(
+                          // Place the container of the left
+                          padding: const EdgeInsets.all(4),
+                          width: MediaQuery.of(context).size.width / 2 - 20,
+                          height:
+                              (((MediaQuery.of(context).size.width - 15) / 10)),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color:
+                                  const Color.fromRGBO(255, 255, 255, 0.078)),
+                          child: Text(torrent.name, // Torrent name
+                              maxLines: 1,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  overflow: TextOverflow.ellipsis))),
+                      const Spacer(flex: 4),
+                      Icon(
+                        size: (((MediaQuery.of(context).size.width - 15) / 10)),
+                        Icons.download_rounded,
+                        color: Colors.white,
+                      ),
+                      // Download Speed
+                      Column(
+                        children: [
+                          Text(torrent.getSpeed()['downspeed']![0],
+                              maxLines: 1,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10)),
+                          Text(torrent.getSpeed()['downspeed']![1],
+                              maxLines: 1,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10)),
+                        ],
+                      ),
+                      const Spacer(),
+                      Icon(
+                        size: (((MediaQuery.of(context).size.width - 15) / 10)),
+                        Icons.upload_rounded,
+                        color: Colors.white,
+                      ),
+                      // Upload Speed
+                      Column(
+                        children: [
+                          Text(torrent.getSpeed()['upspeed']![0],
+                              maxLines: 1,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10)),
+                          Text(torrent.getSpeed()['upspeed']![1],
+                              maxLines: 1,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10)),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  // Progress Bar indicator
+                  LinearProgressIndicator(
+                    value: torrent.progress,
+                    backgroundColor: Colors.white,
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                  const Spacer(),
+
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 60,
+                    child: Stack(
+                      alignment: Alignment.centerLeft,
+                      children: [
+                        Text(
+                            '${torrent.getDownloaded()["downloaded"]![0]} ${torrent.getDownloaded()["downloaded"]![1]} of ${torrent.getDownloaded()["size"]![0]} ${torrent.getDownloaded()["size"]![1]} (${torrent.progress * 100}%)',
+                            maxLines: 1,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 10)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(),
+            // An arrow pointing to the right to indicate that the user can click on the box to see more information
+            const Icon(Icons.arrow_forward_ios_rounded,
+                color: Colors.white, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 // This class will wrap a text inside of a fittedbox inside of a container. The container will have be defined by the width and height paramters, and the text will be defined by the text parameter which accepts a Text widget. The text will be centered and will be scaled to fit the container
 
@@ -571,4 +745,9 @@ void main() {
       800000000, 0, 0, const Duration(seconds: 0), 0);
   print(torrent.getSpeed()["upspeed"]![0]);
   print(torrent.getSpeed()["upspeed"]![1]);
+
+  Torrent torrentTwo = Torrent("test", Stat.downloading, 1000, 900000000, 0,
+      800000000, 100000, 0, const Duration(seconds: 0), 0);
+
+  print(torrentTwo.getDownloaded());
 }
