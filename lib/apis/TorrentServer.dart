@@ -70,7 +70,8 @@ class Torrents {
           newTorrents.add(Torrent(
               torrent['name'],
               state,
-              torrent['downloadedEver'],
+              (torrent['sizeWhenDone'] * torrent['percentDone'] as double)
+                  as int,
               torrent['rateDownload'],
               torrent['uploadedEver'],
               torrent['rateUpload'],

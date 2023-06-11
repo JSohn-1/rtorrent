@@ -46,18 +46,18 @@ class Torrent {
 
     // print(downloadSpeed);
 
-    if (downloadSpeed > 100000000) {
+    if (downloadSpeed >= 1000000000) {
       downspeed = downspeed / 1000000;
       downspeedUnit = "GB/s";
-    } else if (downspeed > 1000) {
+    } else if (downspeed >= 1000) {
       downspeed = downspeed / 1000;
       downspeedUnit = "MB/s";
     }
 
-    if (uploadSpeed > 100000000) {
+    if (uploadSpeed >= 1000000000) {
       upspeed = upspeed / 1000000;
       upspeedUnit = "GB/s";
-    } else if (upspeed > 1000) {
+    } else if (upspeed >= 1000) {
       upspeed = upspeed / 1000;
       upspeedUnit = "MB/s";
     }
@@ -94,18 +94,18 @@ class Torrent {
 
     // print(downloadSpeed);
 
-    if (this.downloaded > 100000000) {
+    if (this.downloaded >= 1000000000) {
       downloaded = downloaded / 1000000;
       downloadedUnit = "GB";
-    } else if (downloaded > 1000) {
+    } else if (downloaded >= 1000) {
       downloaded = downloaded / 1000;
       downloadedUnit = "MB";
     }
 
-    if (this.size > 100000000) {
+    if (this.size >= 1000000000) {
       size = size / 1000000;
       sizeUnit = "GB";
-    } else if (size > 1000) {
+    } else if (size >= 1000) {
       size = size / 1000;
       sizeUnit = "MB";
     }
@@ -131,6 +131,13 @@ class Torrent {
       "downloaded": [findownloaded, downloadedUnit],
       "size": [finsize, sizeUnit]
     });
+  }
+
+  double getProgress() {
+    // Get the progress in the form of a double with 1 decimal place
+    double progress = this.progress * 100;
+    progress = double.parse(progress.toStringAsFixed(1));
+    return progress;
   }
 }
 
@@ -699,7 +706,7 @@ class TorrentBoxPortrait extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       children: [
                         Text(
-                            '${torrent.getDownloaded()["downloaded"]![0]} ${torrent.getDownloaded()["downloaded"]![1]} of ${torrent.getDownloaded()["size"]![0]} ${torrent.getDownloaded()["size"]![1]} (${torrent.progress * 100}%)',
+                            '${torrent.getDownloaded()["downloaded"]![0]} ${torrent.getDownloaded()["downloaded"]![1]} of ${torrent.getDownloaded()["size"]![0]} ${torrent.getDownloaded()["size"]![1]} (${torrent.getProgress()}%)',
                             maxLines: 1,
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 10)),
