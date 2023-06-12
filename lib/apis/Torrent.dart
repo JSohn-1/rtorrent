@@ -648,7 +648,7 @@ class TorrentBoxPortrait extends StatelessWidget {
                               maxLines: 1,
                               style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 10,
+                                  fontSize: 12,
                                   overflow: TextOverflow.ellipsis))),
                       const Spacer(flex: 4),
                       Icon(
