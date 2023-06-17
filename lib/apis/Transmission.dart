@@ -1,5 +1,5 @@
 // import 'dart:html';
-import './Status.dart';
+import '../Status.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -99,12 +99,34 @@ class TransmissionRPC {
     try {
       response =
           await http.post(_url, headers: headers).then((_) => response = _);
+      // Check to make sure the server is a transmission RPC server and if not send a Status object saying that the server is not a transmission RPC server
+      // if (response.body )
+      final Map jsonResult = jsonDecode(response.body);
+
+      if (!jsonResult.containsKey('arguments') ||
+          !jsonResult.containsKey('result')) {}
     } catch (e) {
+      // If the JSON is not valid, then the server is not a transmission RPC server
+      if (e is FormatException) {
+        return Status(0, e.toString(), API.transmission,
+            "The server is not a transmission RPC server");
+      }
+
       return (Status(0, e.toString(), API.transmission,
           "Could not connect to server. Please check your connection"));
     }
     if (response.statusCode == 409) {
+      if (!response.headers.containsKey('x-transmission-session-id')) {
+        return Status(
+          response.statusCode,
+          response.body,
+          API.transmission,
+          "The server is not a transmission RPC server",
+        );
+      }
+
       _sessionId = response.headers['x-transmission-session-id']!;
+
       return ping();
     }
     return Status(response.statusCode, response.body, API.transmission, help);

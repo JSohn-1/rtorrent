@@ -4,7 +4,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'apis/Torrent.dart';
 import 'apis/TorrentServer.dart';
-import 'apis/Status.dart';
+import 'Status.dart';
+import 'Login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,15 +53,27 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: const Center(
-        child: ServerList(),
+      body: Stack(
+        children: [
+          const ServerList(),
+          // A Button to add a new server using th page Login()
+          InkWell(
+            child: const Icon(Icons.add),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Login()),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 }
 
 // This is the scrollable list of all the torrents, which will be a list of
-// TorrentBox widgets. This will call the loadSavedTorrents() method which
+// TorrentBoxPortrait widgets. This will call the loadSavedTorrents() method which
 // returns a Future<List<Torrents>>.
 
 class ServerList extends StatelessWidget {
@@ -86,3 +99,5 @@ class ServerList extends StatelessWidget {
     );
   }
 }
+
+// This page will be used to add torrent servers. 

@@ -1,7 +1,7 @@
 import 'dart:async';
 import '../tests/creds.dart';
 import 'Transmission.dart';
-import 'Status.dart';
+import '../Status.dart';
 import 'Torrent.dart';
 import 'package:flutter/material.dart';
 
@@ -32,6 +32,17 @@ class Torrents {
     switch (api) {
       case API.transmission:
         return await client.ping();
+      default:
+        return Status(500, "Not Implemented", api);
+    }
+  }
+
+  // Static version of the ping method
+  static Future<Status> pingStatic(
+      API api, String domain, String user, String pass) async {
+    switch (api) {
+      case API.transmission:
+        return await TransmissionRPC(domain, user, pass).ping();
       default:
         return Status(500, "Not Implemented", api);
     }

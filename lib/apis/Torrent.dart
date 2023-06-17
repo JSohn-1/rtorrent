@@ -662,11 +662,11 @@ class TorrentBoxPortrait extends StatelessWidget {
                           Text(torrent.getSpeed()['downspeed']![0],
                               maxLines: 1,
                               style: const TextStyle(
-                                  color: Colors.white, fontSize: 10)),
+                                  color: Colors.white, fontSize: 12)),
                           Text(torrent.getSpeed()['downspeed']![1],
                               maxLines: 1,
                               style: const TextStyle(
-                                  color: Colors.white, fontSize: 10)),
+                                  color: Colors.white, fontSize: 12)),
                         ],
                       ),
                       const Spacer(),
@@ -681,11 +681,11 @@ class TorrentBoxPortrait extends StatelessWidget {
                           Text(torrent.getSpeed()['upspeed']![0],
                               maxLines: 1,
                               style: const TextStyle(
-                                  color: Colors.white, fontSize: 10)),
+                                  color: Colors.white, fontSize: 12)),
                           Text(torrent.getSpeed()['upspeed']![1],
                               maxLines: 1,
                               style: const TextStyle(
-                                  color: Colors.white, fontSize: 10)),
+                                  color: Colors.white, fontSize: 12)),
                         ],
                       ),
                     ],

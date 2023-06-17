@@ -1,4 +1,4 @@
-import 'TorrentServer.dart';
+import 'apis/TorrentServer.dart';
 import 'package:flutter/material.dart';
 
 class Status {
