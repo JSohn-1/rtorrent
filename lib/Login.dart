@@ -4,6 +4,8 @@ import 'apis/TorrentServer.dart';
 import 'Status.dart';
 
 class Login extends StatefulWidget {
+  const Login({super.key});
+
   @override
   _LoginState createState() => _LoginState();
 }
@@ -159,7 +161,7 @@ class _InputFieldsState extends State<InputFields> {
 class TestButton extends StatefulWidget {
   final Future<Status> Function() test;
 
-  TestButton({Key? key, required this.test}) : super(key: key);
+  const TestButton({Key? key, required this.test}) : super(key: key);
 
   @override
   _TestButtonState createState() => _TestButtonState();
@@ -241,7 +243,7 @@ class _TestButtonState extends State<TestButton> {
 // Button to add the torrent to the db using the info from the input fields and running the method saveTorrent which accepts a TorrentServer Object and returns a Future<void>
 
 class AddButton extends StatefulWidget {
-  AddButton({Key? key}) : super(key: key);
+  const AddButton({Key? key}) : super(key: key);
 
   @override
   _AddButtonState createState() => _AddButtonState();
@@ -265,7 +267,7 @@ class _AddButtonState extends State<AddButton> {
         InputFields._controllerUser.clear();
         InputFields._controllerPass.clear();
       },
-      child: Text('Add'),
+      child: const Text('Add'),
     );
   }
 }
