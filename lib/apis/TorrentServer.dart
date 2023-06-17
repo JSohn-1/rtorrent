@@ -4,6 +4,10 @@ import 'Transmission.dart';
 import '../Status.dart';
 import 'Torrent.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
+import 'package:sqflite_common/sqlite_api.dart';
+import 'package:path/path.dart';
 
 // the api
 enum API {
@@ -99,10 +103,66 @@ class Torrents {
   }
 
   static Future<List<Torrents>> loadSavedTorrents() async {
+    // If the database doesn't exist, create it
+    // var db = await openDatabase('${getDatabasesPath()}torrents.db');
+    // await db.execute(
+    //     'CREATE TABLE IF NOT EXISTS torrents(api TEXT, domain TEXT, user TEXT, pass TEXT)');
+
+    /*
     return [
       Torrents(TransmissionRPC(Creds.domain, Creds.user, Creds.pass)),
       Torrents(TransmissionRPC(Creds.domain, Creds.user, Creds.pass)),
     ];
+    */
+    print(join('${await getDatabasesPath()}torrents.db'));
+    var db = await openDatabase(join(await getDatabasesPath(), 'torrents.db'),
+        version: 1, onCreate: (db, version) {
+      return db.execute(
+          'CREATE TABLE IF NOT EXISTS torrents(api TEXT, domain TEXT, user TEXT, pass TEXT)');
+    });
+    await db.execute(
+        'CREATE TABLE IF NOT EXISTS torrents(api TEXT, domain TEXT, user TEXT, pass TEXT)');
+    List<Map<String, dynamic>> maps = await db.query('torrents');
+    await db.close();
+
+    List<Torrents> torrents = [];
+    for (Map<String, dynamic> map in maps) {
+      switch (map['api']) {
+        case 'transmission':
+          torrents.add(Torrents(
+              TransmissionRPC(map['domain'], map['user'], map['pass'])));
+          break;
+        default:
+          break;
+      }
+    }
+    return torrents;
+  }
+
+  static Future<void> saveTorrentServer(
+      API api, String domain, String user, String pass) async {
+    var TorrentServer;
+    switch (api) {
+      case API.transmission:
+        TorrentServer = TransmissionRPC(domain, user, pass);
+        break;
+      default:
+        break;
+    }
+
+    var db = await openDatabase('torrents.db');
+    await db.insert('torrents', TorrentServer.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.close();
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'api': apiString,
+      'domain': client.domain,
+      'user': client.user,
+      'pass': client.pass,
+    };
   }
 }
 

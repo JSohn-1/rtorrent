@@ -2,12 +2,20 @@ import 'dart:async';
 // import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'apis/Torrent.dart';
 import 'apis/TorrentServer.dart';
 import 'Status.dart';
 import 'Login.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
+import 'package:sqflite_common/sqlite_api.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  databaseFactory = databaseFactoryFfi;
+
   runApp(const MyApp());
 }
 

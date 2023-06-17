@@ -66,11 +66,12 @@ class _LoginState extends State<Login> {
                 TestButton(
                   test: _test,
                 ),
-                const InkWell(
-                    child: Text(
-                  "Add",
-                  style: TextStyle(color: Colors.white),
-                )),
+                AddButton(),
+                // const InkWell(
+                //     child: Text(
+                //   "Add",
+                //   style: TextStyle(color: Colors.white),
+                // )),
               ],
             )));
   }
@@ -195,14 +196,15 @@ class _TestButtonState extends State<TestButton> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Error'),
-                    content: Text('An error occurred: ${_status!.message}'),
+                    title: const Text('Error'),
+                    content: Text(
+                        'An error occurred: ${_status!.message}, \n ${_status!.help}'),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('Close'),
+                        child: const Text('Close'),
                       ),
                     ],
                   );
@@ -232,6 +234,38 @@ class _TestButtonState extends State<TestButton> {
             ),
           ),
       ],
+    );
+  }
+}
+
+// Button to add the torrent to the db using the info from the input fields and running the method saveTorrent which accepts a TorrentServer Object and returns a Future<void>
+
+class AddButton extends StatefulWidget {
+  AddButton({Key? key}) : super(key: key);
+
+  @override
+  _AddButtonState createState() => _AddButtonState();
+}
+
+class _AddButtonState extends State<AddButton> {
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        // The button will be disabled until the test is complete
+        // The test will be run
+        await Torrents.saveTorrentServer(
+            API.transmission,
+            InputFields._controllerDomain.text,
+            InputFields._controllerUser.text,
+            InputFields._controllerPass.text);
+        // Once the torrent server is added close the login page and clear the fields
+        Navigator.of(context).pop();
+        InputFields._controllerDomain.clear();
+        InputFields._controllerUser.clear();
+        InputFields._controllerPass.clear();
+      },
+      child: Text('Add'),
     );
   }
 }

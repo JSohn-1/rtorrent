@@ -413,6 +413,15 @@ class TransmissionRPC {
     return _makeRequest('torrent-get', arguments)
         .then((_) => jsonDecode(_.body)['arguments']['torrents']);
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "api": "transmission",
+      "domain": _url.toString(),
+      "user": _username,
+      "pass": _password,
+    };
+  }
 }
 
 
