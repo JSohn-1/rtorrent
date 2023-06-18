@@ -262,6 +262,7 @@ class _AddButtonState extends State<AddButton> {
             InputFields._controllerUser.text,
             InputFields._controllerPass.text);
         // Once the torrent server is added close the login page and clear the fields
+        ServerListNotifier().update();
         Navigator.of(context).pop();
         InputFields._controllerDomain.clear();
         InputFields._controllerUser.clear();
@@ -269,5 +270,14 @@ class _AddButtonState extends State<AddButton> {
       },
       child: const Text('Add'),
     );
+  }
+}
+
+// Notifier that will tell the serverlist to update when a new server is added
+
+class ServerListNotifier extends ChangeNotifier {
+  void update() {
+    print("updating");
+    notifyListeners();
   }
 }

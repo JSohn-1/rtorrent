@@ -2,11 +2,12 @@ import 'dart:async';
 // import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:rtorrent/login.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'apis/Torrent.dart';
 import 'apis/TorrentServer.dart';
 import 'Status.dart';
-import 'Login.dart';
+// import 'Login.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
 import 'package:sqflite_common/sqlite_api.dart';
@@ -63,14 +64,14 @@ class MyHomePage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          const ServerList(),
+          const Serverlist(),
           // A Button to add a new server using th page Login()
           InkWell(
             child: const Icon(Icons.add),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Login()),
+                MaterialPageRoute(builder: (context) => const Login()),
               );
             },
           ),
@@ -82,8 +83,9 @@ class MyHomePage extends StatelessWidget {
 
 // This is the scrollable list of all the torrents, which will be a list of
 // TorrentBoxPortrait widgets. This will call the loadSavedTorrents() method which
-// returns a Future<List<Torrents>>.
+// returns a Future<List<Torrents>>. When the user swipes down, it will refresh by recalling the method.
 
+/*
 class ServerList extends StatelessWidget {
   const ServerList({super.key});
 
@@ -105,6 +107,56 @@ class ServerList extends StatelessWidget {
         return const CircularProgressIndicator();
       },
     );
+  }
+}
+*/
+
+class Serverlist extends StatefulWidget {
+  const Serverlist({super.key});
+
+  @override
+  _ServerlistState createState() => _ServerlistState();
+}
+
+class _ServerlistState extends State<Serverlist> {
+  late Future<List<Torrents>> servers;
+
+  @override
+  void initState() {
+    super.initState();
+    servers = Torrents.loadSavedTorrents();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+        listenable: ServerListNotifier(),
+        builder: (BuildContext context, Widget? child) {
+          return FutureBuilder<List<Torrents>>(
+            future: servers,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                // Scrollabe list of all the torrents. If the user swipes down, it will refresh the list. by recalling the method.
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {
+                      servers = Torrents.loadSavedTorrents();
+                    });
+                  },
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      return ServerBox(server: snapshot.data![index]);
+                    },
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text('${snapshot.error}');
+              }
+              return const CircularProgressIndicator();
+            },
+          );
+        });
   }
 }
 
