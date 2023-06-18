@@ -1,3 +1,5 @@
+// TODO: Change the way the torrents are initallily shown. First load which torrents are saved, then async all the individual torrentservers. When the list changes update the list.
+
 import 'dart:async';
 import '../tests/creds.dart';
 import 'Transmission.dart';
@@ -16,6 +18,7 @@ enum API {
 }
 
 class Torrents {
+  static List<Torrents> servers = [];
   late final API api;
   late final client;
   Duration updateInterval = const Duration(seconds: 1);
@@ -103,17 +106,6 @@ class Torrents {
   }
 
   static Future<List<Torrents>> loadSavedTorrents() async {
-    // If the database doesn't exist, create it
-    // var db = await openDatabase('${getDatabasesPath()}torrents.db');
-    // await db.execute(
-    //     'CREATE TABLE IF NOT EXISTS torrents(api TEXT, domain TEXT, user TEXT, pass TEXT)');
-
-    /*
-    return [
-      Torrents(TransmissionRPC(Creds.domain, Creds.user, Creds.pass)),
-      Torrents(TransmissionRPC(Creds.domain, Creds.user, Creds.pass)),
-    ];
-    */
     print(join('${await getDatabasesPath()}torrents.db'));
     var db = await openDatabase(join(await getDatabasesPath(), 'torrents.db'),
         version: 1, onCreate: (db, version) {
@@ -136,6 +128,7 @@ class Torrents {
           break;
       }
     }
+    servers = torrents;
     return torrents;
   }
 
