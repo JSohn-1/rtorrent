@@ -4,13 +4,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rtorrent/login.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'apis/Torrent.dart';
 import 'apis/TorrentServer.dart';
-import 'Status.dart';
 // import 'Login.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
-import 'package:sqflite_common/sqlite_api.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +45,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Home Page while will have a list of all the pages, which are the torrents with a button to add a new torrent
+// Home Page while will have a list of all the pages, which are the torrents
+// with a button to add a new torrent
+
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -64,7 +61,13 @@ class MyHomePage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          const Serverlist(),
+          FutureBuilder(
+              future: Torrents.loadSavedTorrents(),
+              builder: (context, snapshot) {
+                // Once the data is loaded, return a scrollable list of all the torrent
+                print("building server list");
+                return const Serverlist();
+              }),
           // A Button to add a new server using th page Login()
           InkWell(
             child: const Icon(Icons.add),
@@ -81,35 +84,7 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-// This is the scrollable list of all the torrents, which will be a list of
-// TorrentBoxPortrait widgets. This will call the loadSavedTorrents() method which
-// returns a Future<List<Torrents>>. When the user swipes down, it will refresh by recalling the method.
-
-/*
-class ServerList extends StatelessWidget {
-  const ServerList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<Torrents>>(
-      future: Torrents.loadSavedTorrents(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              return ServerBox(server: snapshot.data![index]);
-            },
-          );
-        } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-        return const CircularProgressIndicator();
-      },
-    );
-  }
-}
-*/
+// This is the serverlist that will be displayed on the home page. It will list all the torrents in the form of serverBox widgets. This will use the data from the static field Torrents.servers, which is a list of all the torrents. It will also listen to the ServerListNotifier() which will notify it when the list of torrents is updated. When the user swipes down, it will refresh the list by recalling the ping() method for each torrent
 
 class Serverlist extends StatefulWidget {
   const Serverlist({super.key});
@@ -119,12 +94,12 @@ class Serverlist extends StatefulWidget {
 }
 
 class _ServerlistState extends State<Serverlist> {
-  late Future<List<Torrents>> servers;
+  late List<Torrents> servers;
 
   @override
   void initState() {
     super.initState();
-    servers = Torrents.loadSavedTorrents();
+    servers = Torrents.servers;
   }
 
   @override
@@ -132,32 +107,22 @@ class _ServerlistState extends State<Serverlist> {
     return ListenableBuilder(
         listenable: ServerListNotifier(),
         builder: (BuildContext context, Widget? child) {
-          return FutureBuilder<List<Torrents>>(
-            future: servers,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                // Scrollabe list of all the torrents. If the user swipes down, it will refresh the list. by recalling the method.
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    setState(() {
-                      servers = Torrents.loadSavedTorrents();
-                    });
-                  },
-                  child: ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      return ServerBox(server: snapshot.data![index]);
-                    },
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-              return const CircularProgressIndicator();
+          return RefreshIndicator(
+            onRefresh: () async {
+              setState(() {
+                // Call the ping() method for each torrent and rebuild the list
+                for (Torrents server in servers) {
+                  server.ping();
+                }
+              });
             },
+            child: ListView.builder(
+              itemCount: servers.length,
+              itemBuilder: (context, index) {
+                return ServerBox(server: servers[index]);
+              },
+            ),
           );
         });
   }
 }
-
-// This page will be used to add torrent servers. 

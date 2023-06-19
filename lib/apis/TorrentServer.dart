@@ -1,14 +1,13 @@
-// TODO: Change the way the torrents are initallily shown. First load which torrents are saved, then async all the individual torrentservers. When the list changes update the list.
+// TODO: Change the way the torrents are initallily shown. First load which
+// torrents are saved, then async all the individual torrentservers. When the
+// list changes update the list.
 
 import 'dart:async';
-import '../tests/creds.dart';
 import 'Transmission.dart';
 import '../Status.dart';
 import 'Torrent.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite_ffi;
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:path/path.dart';
 
 // the api
@@ -105,7 +104,7 @@ class Torrents {
     }
   }
 
-  static Future<List<Torrents>> loadSavedTorrents() async {
+  static Future<void> loadSavedTorrents() async {
     print(join('${await getDatabasesPath()}torrents.db'));
     var db = await openDatabase(join(await getDatabasesPath(), 'torrents.db'),
         version: 1, onCreate: (db, version) {
@@ -117,19 +116,18 @@ class Torrents {
     List<Map<String, dynamic>> maps = await db.query('torrents');
     await db.close();
 
-    List<Torrents> torrents = [];
     for (Map<String, dynamic> map in maps) {
       switch (map['api']) {
         case 'transmission':
-          torrents.add(Torrents(
+          servers.add(Torrents(
               TransmissionRPC(map['domain'], map['user'], map['pass'])));
           break;
         default:
           break;
       }
     }
-    servers = torrents;
-    return torrents;
+    print("done loading");
+    return;
   }
 
   static Future<void> saveTorrentServer(
@@ -159,7 +157,10 @@ class Torrents {
   }
 }
 
-// This is the class which will be a vertical scrollable list of the TorrentBox widgets. It will be passed a Torrents object and will call the getTorrents() method which will return a Future<List<Torrent>>. It will also have a button to add a torrent. It will update every second
+// This is the class which will be a vertical scrollable list of the TorrentBox
+// widgets. It will be passed a Torrents object and will call the getTorrents()
+// method which will return a Future<List<Torrent>>. It will also have a button
+// to add a torrent. It will update every second
 
 class TorrentList extends StatefulWidget {
   const TorrentList({super.key, required this.server});
@@ -244,7 +245,10 @@ class ServerBox extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                // If the server is not responding, then the user will be taken to the ErrorPage with the status object passed to it. but if the server is responding, then the user will be taken to the TorrentsPage with the server object passed to it.
+                // If the server is not responding, then the user will be taken
+                // to the ErrorPage with the status object passed to it. but if
+                // the server is responding, then the user will be taken to the
+                // TorrentsPage with the server object passed to it.
 
                 MaterialPageRoute(
                   builder: (context) => snapshot.data!.success
