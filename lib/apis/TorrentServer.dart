@@ -19,7 +19,7 @@ enum API {
 class Torrents {
   static List<Torrents> servers = [];
   late final API api;
-  late final client;
+  late final dynamic client;
   Duration updateInterval = const Duration(seconds: 1);
 
   // Constructor for the Torrents class where the paramters are the API
@@ -134,25 +134,28 @@ class Torrents {
     var TorrentServer;
     switch (api) {
       case API.transmission:
-        TorrentServer = TransmissionRPC(domain, user, pass);
+        TorrentServer = Torrents(TransmissionRPC(domain, user, pass));
         break;
       default:
         break;
     }
-
+    servers.add(TorrentServer);
     var db = await openDatabase('torrents.db');
     await db.insert('torrents', TorrentServer.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     await db.close();
+    return;
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'api': apiString,
-      'domain': client.domain,
-      'user': client.user,
-      'pass': client.pass,
-    };
+    return (client.toMap());
+
+    // return {
+    //   'api': apiString,
+    //   'domain': client._url,
+    //   'user': client._username,
+    //   'pass': client._password,
+    // };
   }
 }
 
