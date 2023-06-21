@@ -104,7 +104,7 @@ class Torrents {
     }
   }
 
-  static Future<void> loadSavedTorrents() async {
+  static Future<bool> loadSavedTorrents() async {
     print(join('${await getDatabasesPath()}torrents.db'));
     var db = await openDatabase(join(await getDatabasesPath(), 'torrents.db'),
         version: 1, onCreate: (db, version) {
@@ -126,8 +126,7 @@ class Torrents {
           break;
       }
     }
-    print("done loading");
-    return;
+    return true;
   }
 
   static Future<void> saveTorrentServer(

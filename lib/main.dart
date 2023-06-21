@@ -64,9 +64,13 @@ class MyHomePage extends StatelessWidget {
           FutureBuilder(
               future: Torrents.loadSavedTorrents(),
               builder: (context, snapshot) {
-                // Once the data is loaded, return a scrollable list of all the torrent
-                print("building server list");
-                return const Serverlist();
+                // Once the data is loaded, return a scrollable list of all the torrent which is the Serverlist() widget
+                if (snapshot.hasData) {
+                  return const Serverlist();
+                } else {
+                  // If the data is not loaded, return a loading screen
+                  return const Center(child: CircularProgressIndicator());
+                }
               }),
           // A Button to add a new server using th page Login()
           InkWell(
