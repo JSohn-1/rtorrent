@@ -91,7 +91,9 @@ class MyHomePage extends StatelessWidget {
 // This is the serverlist that will be displayed on the home page. It will list all the torrents in the form of serverBox widgets. This will use the data from the static field Torrents.servers, which is a list of all the torrents. It will also listen to the ServerListNotifier() which will notify it when the list of torrents is updated. When the user swipes down, it will refresh the list by recalling the ping() method for each torrent
 
 class Serverlist extends StatefulWidget {
-  const Serverlist({super.key});
+  const Serverlist({super.key, required this.loginNotifier});
+
+  final ServerListNotifier loginNotifier;
 
   @override
   _ServerlistState createState() => _ServerlistState();
@@ -99,6 +101,7 @@ class Serverlist extends StatefulWidget {
 
 class _ServerlistState extends State<Serverlist> {
   late List<Torrents> servers;
+  final ServerListNotifier serverListNotifier = ServerListNotifier();
 
   @override
   void initState() {
@@ -109,8 +112,9 @@ class _ServerlistState extends State<Serverlist> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-        listenable: ServerListNotifier(),
+        listenable: serverListNotifier,
         builder: (BuildContext context, Widget? child) {
+          print("uupdating");
           return RefreshIndicator(
             onRefresh: () async {
               setState(() {

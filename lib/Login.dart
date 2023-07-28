@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+
 import 'apis/TorrentServer.dart';
 import 'Status.dart';
 
@@ -275,9 +276,10 @@ class _AddButtonState extends State<AddButton> {
 
 // Notifier that will tell the serverlist to update when a new server is added
 
-class ServerListNotifier extends ChangeNotifier {
+class ServerListNotifier with ChangeNotifier {
   void update() {
     print("updating");
+    print(Torrents.servers.length);
     notifyListeners();
   }
 }
