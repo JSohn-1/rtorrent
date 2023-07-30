@@ -73,15 +73,6 @@ class MyHomePage extends StatelessWidget {
                 }
               }),
           // A Button to add a new server using th page Login()
-          InkWell(
-            child: const Icon(Icons.add),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Login()),
-              );
-            },
-          ),
         ],
       ),
     );
@@ -91,9 +82,7 @@ class MyHomePage extends StatelessWidget {
 // This is the serverlist that will be displayed on the home page. It will list all the torrents in the form of serverBox widgets. This will use the data from the static field Torrents.servers, which is a list of all the torrents. It will also listen to the ServerListNotifier() which will notify it when the list of torrents is updated. When the user swipes down, it will refresh the list by recalling the ping() method for each torrent
 
 class Serverlist extends StatefulWidget {
-  const Serverlist({super.key, required this.loginNotifier});
-
-  final ServerListNotifier loginNotifier;
+  const Serverlist({super.key});
 
   @override
   _ServerlistState createState() => _ServerlistState();
@@ -101,7 +90,6 @@ class Serverlist extends StatefulWidget {
 
 class _ServerlistState extends State<Serverlist> {
   late List<Torrents> servers;
-  final ServerListNotifier serverListNotifier = ServerListNotifier();
 
   @override
   void initState() {
@@ -109,28 +97,46 @@ class _ServerlistState extends State<Serverlist> {
     servers = Torrents.servers;
   }
 
+  void rebuild() {
+    setState(() {
+      servers = Torrents.servers;
+
+      for (Torrents server in servers) {
+        server.ping();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-        listenable: serverListNotifier,
-        builder: (BuildContext context, Widget? child) {
-          print("uupdating");
-          return RefreshIndicator(
-            onRefresh: () async {
-              setState(() {
-                // Call the ping() method for each torrent and rebuild the list
-                for (Torrents server in servers) {
-                  server.ping();
-                }
-              });
+    return Stack(
+      children: [
+        RefreshIndicator(
+          onRefresh: () async {
+            setState(() {
+              // Call the ping() method for each torrent and rebuild the list
+              for (Torrents server in servers) {
+                server.ping();
+              }
+            });
+          },
+          child: ListView.builder(
+            itemCount: servers.length,
+            itemBuilder: (context, index) {
+              return ServerBox(server: servers[index]);
             },
-            child: ListView.builder(
-              itemCount: servers.length,
-              itemBuilder: (context, index) {
-                return ServerBox(server: servers[index]);
-              },
-            ),
-          );
-        });
+          ),
+        ),
+        InkWell(
+          child: const Icon(Icons.add),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Login(callback: rebuild)),
+            );
+          },
+        ),
+      ],
+    );
   }
 }

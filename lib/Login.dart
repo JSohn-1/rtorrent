@@ -5,7 +5,8 @@ import 'apis/TorrentServer.dart';
 import 'Status.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  Function? callback;
+  Login({super.key, required this.callback});
 
   @override
   _LoginState createState() => _LoginState();
@@ -65,11 +66,11 @@ class _LoginState extends State<Login> {
                     style: TextStyle(fontSize: 20, color: Colors.white)),
                 const Text("Domain (Include http:// or https://)",
                     style: TextStyle(fontSize: 15, color: Colors.white)),
-                const InputFields(),
+                InputFields(),
                 TestButton(
                   test: _test,
                 ),
-                AddButton(),
+                AddButton(callback: widget.callback!),
                 // const InkWell(
                 //     child: Text(
                 //   "Add",
@@ -86,7 +87,7 @@ class InputFields extends StatefulWidget {
   static final TextEditingController _controllerUser = TextEditingController();
   static final TextEditingController _controllerPass = TextEditingController();
 
-  const InputFields({super.key});
+  InputFields({super.key});
 
   static TextEditingController get controllerDomain => _controllerDomain;
   static TextEditingController get controllerUser => _controllerUser;
@@ -244,7 +245,8 @@ class _TestButtonState extends State<TestButton> {
 // Button to add the torrent to the db using the info from the input fields and running the method saveTorrent which accepts a TorrentServer Object and returns a Future<void>
 
 class AddButton extends StatefulWidget {
-  const AddButton({Key? key}) : super(key: key);
+  Function? callback;
+  AddButton({Key? key, required this.callback}) : super(key: key);
 
   @override
   _AddButtonState createState() => _AddButtonState();
@@ -263,8 +265,9 @@ class _AddButtonState extends State<AddButton> {
             InputFields._controllerUser.text,
             InputFields._controllerPass.text);
         // Once the torrent server is added close the login page and clear the fields
-        ServerListNotifier().update();
+
         Navigator.of(context).pop();
+        widget.callback!();
         InputFields._controllerDomain.clear();
         InputFields._controllerUser.clear();
         InputFields._controllerPass.clear();
@@ -276,10 +279,24 @@ class _AddButtonState extends State<AddButton> {
 
 // Notifier that will tell the serverlist to update when a new server is added
 
-class ServerListNotifier with ChangeNotifier {
-  void update() {
-    print("updating");
-    print(Torrents.servers.length);
-    notifyListeners();
-  }
-}
+// class ServerListNotifier extends ChangeNotifier {
+//   @override
+//   void addListener(VoidCallback listener) {
+//     super.addListener(listener);
+//     print("adding listener");
+//   }
+
+//   @override
+//   void notifyListeners() {
+//     super.notifyListeners();
+//     print("notifying listeners");
+//   }
+
+//   Future<void> update(API api, String domain, String user, String pass) async {
+//     await Torrents.saveTorrentServer(api, domain, user, pass);
+//     print(Torrents.servers.length);
+//     // Print the number of all registered listeners
+
+//     notifyListeners();
+//   }
+// }
