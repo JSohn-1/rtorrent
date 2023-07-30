@@ -64,11 +64,9 @@ class MyHomePage extends StatelessWidget {
           FutureBuilder(
               future: Torrents.loadSavedTorrents(),
               builder: (context, snapshot) {
-                // Once the data is loaded, return a scrollable list of all the torrent which is the Serverlist() widget
                 if (snapshot.hasData) {
                   return const Serverlist();
                 } else {
-                  // If the data is not loaded, return a loading screen
                   return const Center(child: CircularProgressIndicator());
                 }
               }),
@@ -109,34 +107,44 @@ class _ServerlistState extends State<Serverlist> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        RefreshIndicator(
-          onRefresh: () async {
-            setState(() {
-              // Call the ping() method for each torrent and rebuild the list
-              for (Torrents server in servers) {
-                server.ping();
-              }
-            });
-          },
-          child: ListView.builder(
-            itemCount: servers.length,
-            itemBuilder: (context, index) {
-              return ServerBox(server: servers[index]);
+    return Container(
+      color: const Color.fromARGB(255, 20, 20, 20),
+      child: Stack(
+        children: [
+          RefreshIndicator(
+            onRefresh: () async {
+              setState(() {
+                for (Torrents server in servers) {
+                  server.ping();
+                }
+              });
             },
+            child: ListView.builder(
+              itemCount: servers.length,
+              itemBuilder: (context, index) {
+                return ServerBox(server: servers[index]);
+              },
+            ),
           ),
-        ),
-        InkWell(
-          child: const Icon(Icons.add),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Login(callback: rebuild)),
-            );
-          },
-        ),
-      ],
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Login(
+                      callback: rebuild,
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

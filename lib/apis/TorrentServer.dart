@@ -18,13 +18,14 @@ enum API {
 
 class Torrents {
   static List<Torrents> servers = [];
+  late final String name;
   late final API api;
   late final dynamic client;
   Duration updateInterval = const Duration(seconds: 1);
 
   // Constructor for the Torrents class where the paramters are the API
   // and the client object
-  Torrents(this.client) {
+  Torrents(this.name, this.client) {
     if (client is TransmissionRPC) {
       api = API.transmission;
     }
@@ -109,17 +110,17 @@ class Torrents {
     var db = await openDatabase(join(await getDatabasesPath(), 'torrents.db'),
         version: 1, onCreate: (db, version) {
       return db.execute(
-          'CREATE TABLE IF NOT EXISTS torrents(api TEXT, domain TEXT, user TEXT, pass TEXT)');
+          'CREATE TABLE IF NOT EXISTS torrents(name TEXT, api TEXT, domain TEXT, user TEXT, pass TEXT)');
     });
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS torrents(api TEXT, domain TEXT, user TEXT, pass TEXT)');
+        'CREATE TABLE IF NOT EXISTS torrents(name TEXT, api TEXT, domain TEXT, user TEXT, pass TEXT)');
     List<Map<String, dynamic>> maps = await db.query('torrents');
     await db.close();
 
     for (Map<String, dynamic> map in maps) {
       switch (map['api']) {
         case 'transmission':
-          servers.add(Torrents(
+          servers.add(Torrents(map['name'],
               TransmissionRPC(map['domain'], map['user'], map['pass'])));
           break;
         default:
@@ -130,11 +131,11 @@ class Torrents {
   }
 
   static Future<void> saveTorrentServer(
-      API api, String domain, String user, String pass) async {
+      String name, API api, String domain, String user, String pass) async {
     var TorrentServer;
     switch (api) {
       case API.transmission:
-        TorrentServer = Torrents(TransmissionRPC(domain, user, pass));
+        TorrentServer = Torrents(name, TransmissionRPC(domain, user, pass));
         break;
       default:
         break;
@@ -148,14 +149,9 @@ class Torrents {
   }
 
   Map<String, dynamic> toMap() {
-    return (client.toMap());
-
-    // return {
-    //   'api': apiString,
-    //   'domain': client._url,
-    //   'user': client._username,
-    //   'pass': client._password,
-    // };
+    Map<String, dynamic> map = client.toMap();
+    map['name'] = name;
+    return (map);
   }
 }
 
@@ -260,10 +256,12 @@ class ServerBox extends StatelessWidget {
               );
             },
             child: Container(
+              height: 50,
+              width: MediaQuery.of(context).size.width,
+              color: const Color.fromARGB(245, 255, 255, 255),
               padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
-                  Text('${server.apiString}: ${snapshot.data!.code}'),
                   Container(
                     width: 10,
                     height: 10,
@@ -272,6 +270,7 @@ class ServerBox extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                   ),
+                  Text(server.name),
                 ],
               ),
             ),

@@ -82,6 +82,7 @@ class _LoginState extends State<Login> {
 }
 
 class InputFields extends StatefulWidget {
+  static final TextEditingController _controllerName = TextEditingController();
   static final TextEditingController _controllerDomain =
       TextEditingController();
   static final TextEditingController _controllerUser = TextEditingController();
@@ -89,6 +90,7 @@ class InputFields extends StatefulWidget {
 
   InputFields({super.key});
 
+  static TextEditingController get controllerName => _controllerName;
   static TextEditingController get controllerDomain => _controllerDomain;
   static TextEditingController get controllerUser => _controllerUser;
   static TextEditingController get controllerPass => _controllerPass;
@@ -101,6 +103,24 @@ class _InputFieldsState extends State<InputFields> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(
+            width: MediaQuery.of(context).size.width * 0.9,
+            child: TextField(
+              controller: InputFields._controllerName,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+                labelText: 'Name',
+                labelStyle: TextStyle(color: Colors.white),
+              ),
+              onChanged: (text) {
+                setState(() {});
+              },
+            )),
+        const Padding(padding: EdgeInsets.all(10)),
         SizedBox(
             width: MediaQuery.of(context).size.width * 0.9,
             child: TextField(
@@ -216,7 +236,7 @@ class _TestButtonState extends State<TestButton> {
               );
             }
           },
-          child: Text('Test'),
+          child: const Text('Test'),
         ),
         // If the button is disabled, a loading circle will appear to the right of the button
         if (_disabled)
@@ -257,15 +277,12 @@ class _AddButtonState extends State<AddButton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        // The button will be disabled until the test is complete
-        // The test will be run
         await Torrents.saveTorrentServer(
+            InputFields._controllerDomain.text,
             API.transmission,
             InputFields._controllerDomain.text,
             InputFields._controllerUser.text,
             InputFields._controllerPass.text);
-        // Once the torrent server is added close the login page and clear the fields
-
         Navigator.of(context).pop();
         widget.callback!();
         InputFields._controllerDomain.clear();
@@ -276,27 +293,3 @@ class _AddButtonState extends State<AddButton> {
     );
   }
 }
-
-// Notifier that will tell the serverlist to update when a new server is added
-
-// class ServerListNotifier extends ChangeNotifier {
-//   @override
-//   void addListener(VoidCallback listener) {
-//     super.addListener(listener);
-//     print("adding listener");
-//   }
-
-//   @override
-//   void notifyListeners() {
-//     super.notifyListeners();
-//     print("notifying listeners");
-//   }
-
-//   Future<void> update(API api, String domain, String user, String pass) async {
-//     await Torrents.saveTorrentServer(api, domain, user, pass);
-//     print(Torrents.servers.length);
-//     // Print the number of all registered listeners
-
-//     notifyListeners();
-//   }
-// }
