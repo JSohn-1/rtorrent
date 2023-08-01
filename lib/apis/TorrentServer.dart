@@ -153,6 +153,10 @@ class Torrents {
     map['name'] = name;
     return (map);
   }
+
+  String getAPIString() {
+    return api.toString().split('.').last;
+  }
 }
 
 // This is the class which will be a vertical scrollable list of the TorrentBox
@@ -201,7 +205,6 @@ class _TorrentListState extends State<TorrentList> {
               appBar: AppBar(title: const Text("Torrents")),
               body: Container(
                   color: const Color.fromARGB(255, 20, 20, 20),
-                  // padding: const EdgeInsets.all(8),
                   child: ListView.builder(
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
@@ -239,41 +242,69 @@ class ServerBox extends StatelessWidget {
       future: server.ping(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                // If the server is not responding, then the user will be taken
-                // to the ErrorPage with the status object passed to it. but if
-                // the server is responding, then the user will be taken to the
-                // TorrentsPage with the server object passed to it.
+          return Column(
+            children: [
+              // const Padding(
+              //   padding: EdgeInsets.all(5),
+              // ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      // If the server is not responding, then the user will be taken
+                      // to the ErrorPage with the status object passed to it. but if
+                      // the server is responding, then the user will be taken to the
+                      // TorrentsPage with the server object passed to it.
 
-                MaterialPageRoute(
-                  builder: (context) => snapshot.data!.success
-                      ? TorrentList(server: server)
-                      : ErrorPage(status: snapshot.data!),
-                ),
-              );
-            },
-            child: Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width,
-              color: const Color.fromARGB(245, 255, 255, 255),
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  Container(
-                    width: 10,
-                    height: 10,
+                      MaterialPageRoute(
+                        builder: (context) => snapshot.data!.success
+                            ? TorrentList(server: server)
+                            : ErrorPage(status: snapshot.data!),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      color: snapshot.data!.success ? Colors.green : Colors.red,
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(20),
+                      color: const Color.fromARGB(20, 255, 255, 255),
+                    ),
+                    child: Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                        ),
+                        Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: snapshot.data!.success
+                                ? Colors.green
+                                : Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(right: 8),
+                        ),
+                        Text(
+                          server.name,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        const Spacer(flex: 1),
+                        Text('(${server.getAPIString()})',
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 10)),
+                        const Padding(padding: EdgeInsets.only(right: 8)),
+                      ],
                     ),
                   ),
-                  Text(server.name),
-                ],
+                ),
               ),
-            ),
+            ],
           );
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');

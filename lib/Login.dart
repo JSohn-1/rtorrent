@@ -278,13 +278,14 @@ class _AddButtonState extends State<AddButton> {
     return ElevatedButton(
       onPressed: () async {
         await Torrents.saveTorrentServer(
-            InputFields._controllerDomain.text,
+            InputFields._controllerName.text,
             API.transmission,
             InputFields._controllerDomain.text,
             InputFields._controllerUser.text,
             InputFields._controllerPass.text);
         Navigator.of(context).pop();
         widget.callback!();
+        InputFields._controllerName.clear();
         InputFields._controllerDomain.clear();
         InputFields._controllerUser.clear();
         InputFields._controllerPass.clear();
