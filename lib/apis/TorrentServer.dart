@@ -7,7 +7,6 @@ import 'transmission.dart';
 import '../Status.dart';
 import 'Torrent.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
 
