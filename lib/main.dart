@@ -1,11 +1,7 @@
-import 'dart:async';
-// import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:rtorrent/login.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'apis/TorrentServer.dart';
-// import 'Login.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

@@ -3,11 +3,12 @@
 // list changes update the list.
 
 import 'dart:async';
-import 'Transmission.dart';
+import 'transmission.dart';
 import '../Status.dart';
 import 'Torrent.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common/sqlite_api.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
 
 // the api
@@ -61,27 +62,27 @@ class Torrents {
         List torrents = await client.getTorrentMultiple();
         List<Torrent> newTorrents = [];
         for (Map<String, dynamic> torrent in torrents) {
-          Stat state = Stat.stopped;
+          TorrentStatus state = TorrentStatus.stopped;
           if (torrent['status'] == 0) {
-            state = Stat.stopped;
+            state = TorrentStatus.stopped;
           } else if (torrent['status'] == 1) {
-            state = Stat.queuedToVerify;
+            state = TorrentStatus.queuedToVerify;
           } else if (torrent['status'] == 2) {
-            state = Stat.verifying;
+            state = TorrentStatus.verifying;
           } else if (torrent['status'] == 3) {
-            state = Stat.queuedToDownload;
+            state = TorrentStatus.queuedToDownload;
           } else if (torrent['status'] == 4) {
-            state = Stat.downloading;
+            state = TorrentStatus.downloading;
           } else if (torrent['status'] == 5) {
-            state = Stat.queuedToSeed;
+            state = TorrentStatus.queuedToSeed;
           } else if (torrent['status'] == 6) {
-            state = Stat.seeding;
+            state = TorrentStatus.seeding;
           }
 
           // If the torrent is being verified, the progress is the recheckProgress
           // Otherwise, it is the percentDone
 
-          if (state == Stat.verifying) {
+          if (state == TorrentStatus.verifying) {
             torrent['percentDone'] = torrent['recheckProgress'];
           }
 
@@ -106,7 +107,6 @@ class Torrents {
   }
 
   static Future<bool> loadSavedTorrents() async {
-    print(join('${await getDatabasesPath()}torrents.db'));
     var db = await openDatabase(join(await getDatabasesPath(), 'torrents.db'),
         version: 1, onCreate: (db, version) {
       return db.execute(

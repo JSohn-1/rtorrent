@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'TorrentServer.dart';
+import 'Torrent.dart';
 
 class TransmissionRPC {
   // Make a class that will act as a wrapper for the transmission RPC
@@ -22,26 +23,26 @@ class TransmissionRPC {
     }
   }
 
-  Future<bool> init() async {
-    Response? response;
-    // Check if the server is actually a transmission RPC server and check if the credentials are correct
-    try {
-      await http.post(_url, headers: {
-        'Authorization':
-            'Basic ${base64Encode(utf8.encode('$_username:$_password'))}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      }).then((_) => response = _);
-    } catch (e) {
-      return false;
-    }
-    // Wait for the response to be returned, then if x-transmission-session-id is in the headers, then set the session id to the value of the header and return true else return false
-    if (response!.headers.containsKey('x-transmission-session-id')) {
-      _sessionId = response!.headers['x-transmission-session-id']!;
-      return true;
-    }
-    return false;
-  }
+  // Future<bool> init() async {
+  //   Response? response;
+  //   // Check if the server is actually a transmission RPC server and check if the credentials are correct
+  //   try {
+  //     await http.post(_url, headers: {
+  //       'Authorization':
+  //           'Basic ${base64Encode(utf8.encode('$_username:$_password'))}',
+  //       'Content-Type': 'application/json',
+  //       'Accept': 'application/json',
+  //     }).then((_) => response = _);
+  //   } catch (e) {
+  //     return false;
+  //   }
+  //   // Wait for the response to be returned, then if x-transmission-session-id is in the headers, then set the session id to the value of the header and return true else return false
+  //   if (response!.headers.containsKey('x-transmission-session-id')) {
+  //     _sessionId = response!.headers['x-transmission-session-id']!;
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   // Future<void> _getSessionId() async{
   //   // Make a call to the TransmissionRPC server to aquire the X-Transmission-Session-Id
@@ -62,25 +63,25 @@ class TransmissionRPC {
   //   );
   // }
 
-  Future<bool> testCredentials() async {
-    Response? response;
-    // Make a call to the TransmissionRPC server to test the credentials
-    // Make a request to the transmission RPC if the error is 409, then the credentials are correct and return false
-    Map<String, String> headers = {
-      'Authorization':
-          'Basic ${base64Encode(utf8.encode("$_username:$_password"))}',
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-    await http.post(_url, headers: headers).then((_) => response = _);
+  // Future<bool> testCredentials() async {
+  //   Response? response;
+  //   // Make a call to the TransmissionRPC server to test the credentials
+  //   // Make a request to the transmission RPC if the error is 409, then the credentials are correct and return false
+  //   Map<String, String> headers = {
+  //     'Authorization':
+  //         'Basic ${base64Encode(utf8.encode("$_username:$_password"))}',
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //   };
+  //   await http.post(_url, headers: headers).then((_) => response = _);
 
-    if (response!.statusCode == 409) {
-      _sessionId = response!.headers['x-transmission-session-id']!;
-      return true;
-    }
+  //   if (response!.statusCode == 409) {
+  //     _sessionId = response!.headers['x-transmission-session-id']!;
+  //     return true;
+  //   }
 
-    return response!.statusCode != 401;
-  }
+  //   return response!.statusCode != 401;
+  // }
 
   // Method that returns the status of the server as a Future<Response>
   Future<Status> ping() async {
@@ -412,6 +413,33 @@ class TransmissionRPC {
 
     return _makeRequest('torrent-get', arguments)
         .then((_) => jsonDecode(_.body)['arguments']['torrents']);
+  }
+
+  Future<List<Torrent>> getAllTorrents() async {
+    List<Torrent> torrents = [];
+    List<dynamic> map = await getTorrentMultiple();
+
+    for (Map<String, dynamic> torrent in map) {
+      TorrentStatus state = TorrentStatus.values[torrent['status']];
+
+      if (state == TorrentStatus.verifying) {
+        torrent['percentDone'] = torrent['recheckProgress'];
+      }
+
+      torrents.add(Torrent(
+          torrent['name'],
+          state,
+          ((torrent['sizeWhenDone'] * torrent['percentDone']).toDouble())
+              .toInt(),
+          torrent['rateDownload'],
+          torrent['uploadedEver'],
+          torrent['rateUpload'],
+          torrent['sizeWhenDone'],
+          torrent['percentDone'].toDouble(),
+          Duration(seconds: torrent['eta']),
+          torrent['peersConnected']));
+    }
+    return torrents;
   }
 
   Map<String, dynamic> toMap() {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum Stat {
+enum TorrentStatus {
   downloading,
   queuedToDownload,
   paused,
@@ -15,7 +15,7 @@ enum Stat {
 class Torrent {
   late final String name;
   late final String id;
-  late final Stat state;
+  late final TorrentStatus state;
   late final int downloaded;
   late final int downloadSpeed;
   late final int uploaded;
@@ -748,13 +748,13 @@ class FittedText extends StatelessWidget {
 }
 
 void main() {
-  Torrent torrent = Torrent("test", Stat.downloading, 0, 900000000, 0,
+  Torrent torrent = Torrent("test", TorrentStatus.downloading, 0, 900000000, 0,
       800000000, 0, 0, const Duration(seconds: 0), 0);
   print(torrent.getSpeed()["upspeed"]![0]);
   print(torrent.getSpeed()["upspeed"]![1]);
 
-  Torrent torrentTwo = Torrent("test", Stat.downloading, 1000, 900000000, 0,
-      800000000, 100000, 0, const Duration(seconds: 0), 0);
+  Torrent torrentTwo = Torrent("test", TorrentStatus.downloading, 1000,
+      900000000, 0, 800000000, 100000, 0, const Duration(seconds: 0), 0);
 
   print(torrentTwo.getDownloaded());
 }
