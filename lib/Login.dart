@@ -60,23 +60,25 @@ class _LoginState extends State<Login> {
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             color: const Color.fromARGB(255, 20, 20, 20),
-            child: Column(
-              children: [
-                const Text("Add another torrent server:",
-                    style: TextStyle(fontSize: 20, color: Colors.white)),
-                const Text("Domain (Include http:// or https://)",
-                    style: TextStyle(fontSize: 15, color: Colors.white)),
-                InputFields(),
-                TestButton(
-                  test: _test,
-                ),
-                AddButton(callback: widget.callback!),
-                // const InkWell(
-                //     child: Text(
-                //   "Add",
-                //   style: TextStyle(color: Colors.white),
-                // )),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const Text("Add another torrent server:",
+                      style: TextStyle(fontSize: 20, color: Colors.white)),
+                  const Text("Domain (Include http:// or https://)",
+                      style: TextStyle(fontSize: 15, color: Colors.white)),
+                  InputFields(),
+                  TestButton(
+                    test: _test,
+                  ),
+                  AddButton(callback: widget.callback!),
+                  // const InkWell(
+                  //     child: Text(
+                  //   "Add",
+                  //   style: TextStyle(color: Colors.white),
+                  // )),
+                ],
+              ),
             )));
   }
 }
