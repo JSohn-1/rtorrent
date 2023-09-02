@@ -279,13 +279,14 @@ class _AddButtonState extends State<AddButton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
+        final navigator = Navigator.of(context); // <- Add this
         await Torrents.saveTorrentServer(
             InputFields._controllerName.text,
             API.transmission,
             InputFields._controllerDomain.text,
             InputFields._controllerUser.text,
             InputFields._controllerPass.text);
-        Navigator.of(context).pop();
+        navigator.pop();
         widget.callback!();
         InputFields._controllerName.clear();
         InputFields._controllerDomain.clear();

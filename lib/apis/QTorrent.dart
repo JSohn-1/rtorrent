@@ -12,12 +12,14 @@ enum HttpMethod {
 }
 
 class QTorrent {
-  late final Uri _url;
+  late final String _url;
   late final String _username;
   late final String _password;
   String cookie = "";
 
-  QTorrent(this._url, this._username, this._password);
+  QTorrent(String url, this._username, this._password) {
+    _url = '$url/api/v2/';
+  }
 
   Future<Status> ping() async {
     Response response;
@@ -27,13 +29,9 @@ class QTorrent {
       'password': _password,
     };
 
-    try {
-      response =
-          await http.post(_url, headers: headers).then((_) => response = _);
-    } catch (e) {
-      return Status(0, e.toString(), API.qBittorrent,
-          "Could not connect to server. Please check your connection");
-    }
+    // Get the auth cookie
+    response = await _makeRequest(HttpMethod.post, 'auth/login', headers);
+    print(response.headers);
 
     if (response.statusCode == 200) {
       cookie = response.headers['Set-Cookie']!;
@@ -43,17 +41,15 @@ class QTorrent {
   }
 
   Future<Response> _makeRequest(HttpMethod httpMethod, String method,
-      [Map<String, dynamic> arguments = const {}]) async {
+      [Map<String, String> arguments = const {}]) async {
     Response? response;
-
-    // Map<String, String> headers = {};
 
     if (httpMethod == HttpMethod.post) {
       await http
-          .post(_url, body: jsonEncode(arguments))
+          .post(Uri.parse('$_url$method'), headers: arguments)
           .then((_) => response = _);
     } else if (httpMethod == HttpMethod.get) {
-      await http.get(_url).then((_) => response = _);
+      await http.get(Uri.parse('$_url$method')).then((_) => response = _);
     }
 
     return response!;
