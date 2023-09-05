@@ -14,4 +14,9 @@ void main() async {
     Status status = await qTorrent.ping();
     expect(status.code, 200);
   });
+
+  test('getTorrents', () async {
+    Status status = await qTorrent.getTorrents();
+    expect(status.code, 200);
+  });
 }
