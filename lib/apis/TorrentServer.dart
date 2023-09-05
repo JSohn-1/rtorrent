@@ -3,7 +3,7 @@
 // list changes update the list.
 
 import 'dart:async';
-import 'transmission.dart';
+import 'Transmission.dart';
 import '../Status.dart';
 import 'Torrent.dart';
 import 'package:flutter/material.dart';
