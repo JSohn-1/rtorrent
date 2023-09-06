@@ -61,9 +61,9 @@ class Torrents {
         List torrents = await client.getTorrentMultiple();
         List<Torrent> newTorrents = [];
         for (Map<String, dynamic> torrent in torrents) {
-          TorrentStatus state = TorrentStatus.stopped;
+          TorrentStatus state = TorrentStatus.paused;
           if (torrent['status'] == 0) {
-            state = TorrentStatus.stopped;
+            state = TorrentStatus.paused;
           } else if (torrent['status'] == 1) {
             state = TorrentStatus.queuedToVerify;
           } else if (torrent['status'] == 2) {

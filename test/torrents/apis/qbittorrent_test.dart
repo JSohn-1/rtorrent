@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:rtorrent/Status.dart';
 import 'package:rtorrent/apis/QTorrent.dart';
+import 'package:rtorrent/apis/Torrent.dart';
 
 void main() async {
   String url = 'http://localhost:8080';
@@ -16,7 +17,14 @@ void main() async {
   });
 
   test('getTorrents', () async {
-    Status status = await qTorrent.getTorrents();
-    expect(status.code, 200);
+    Exception? e;
+
+    try {
+      await qTorrent.getTorrents();
+    } on Exception catch (_) {
+      e = _;
+    }
+
+    expect(e, null);
   });
 }

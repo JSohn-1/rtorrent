@@ -40,7 +40,7 @@ class QTorrent {
     return Status(response.statusCode, response.body, API.transmission, "");
   }
 
-  Future<List<Torrents>> getTorrents() async {
+  Future<List<Torrent>> getTorrents() async {
     Response response;
 
     Map<String, String> headers = {
@@ -49,24 +49,38 @@ class QTorrent {
 
     response = await _makeRequest(HttpMethod.get, 'torrents/info', headers);
 
-    List<Torrents> torrents = [];
+    List<Torrent> torrents = [];
 
     if (response.statusCode == 200) {
       List<dynamic> json = jsonDecode(response.body);
 
       for (dynamic torrent in json) {
-        TorrentStatus status = TorrentStatus.stopped;
-        if (torrent['state'] == 'downloading') {
-          status = TorrentStatus.downloading;
-        } else if (torrent['state'] == 'queuedDL') {
-          status = TorrentStatus.queuedToDownload;
-        } else if (torrent['state'] == 'stalledUP' ||
-            torrent['state'] == 'stalledDL') {
-          status = TorrentStatus.paused;
-        } else if (torrent['state'] == '')
-          torrents.add(Torrent(
+        TorrentStatus status = TorrentStatus.paused;
+        status =
+            torrent['state'] == 'downloading' || torrent['state'] == 'metaDL'
+                ? TorrentStatus.downloading
+                : status;
+
+        status = torrent['state'] == 'queuedDL'
+            ? TorrentStatus.queuedToDownload
+            : status;
+
+        status =
+            torrent['state'] == 'stalledUP' || torrent['state'] == 'stalledDL'
+                ? TorrentStatus.paused
+                : status;
+
+        torrents.add(Torrent(
             torrent['name'],
-          ));
+            status,
+            torrent['downloaded'],
+            torrent['dlspeed'],
+            torrent['uploaded'],
+            torrent['upspeed'],
+            torrent['size'],
+            torrent['progress'],
+            Duration(seconds: torrent['eta']),
+            torrent['num_seeds']));
       }
     }
 

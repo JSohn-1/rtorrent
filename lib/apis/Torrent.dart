@@ -4,7 +4,6 @@ enum TorrentStatus {
   downloading,
   queuedToDownload,
   paused,
-  stopped,
   queuedToVerify,
   verifying,
   queuedToSeed,
