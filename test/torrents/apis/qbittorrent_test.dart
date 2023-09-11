@@ -13,18 +13,24 @@ void main() async {
 
   test('ping', () async {
     Status status = await qTorrent.ping();
+
+    print(qTorrent.cookie);
+
     expect(status.code, 200);
+    expect(qTorrent.cookie != "", true);
   });
 
   test('getTorrents', () async {
     Exception? e;
+    List<Torrent> torrents = [];
 
     try {
-      await qTorrent.getTorrents();
+      torrents = await qTorrent.getTorrents();
     } on Exception catch (_) {
       e = _;
     }
 
     expect(e, null);
+    expect(torrents[0].name, 'kali.linux-2023.3-installer-amd64.iso');
   });
 }

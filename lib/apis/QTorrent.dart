@@ -34,8 +34,13 @@ class QTorrent {
     response = await _makeRequest(HttpMethod.post, 'auth/login', headers);
 
     if (response.statusCode == 200) {
-      cookie = response.headers['set-cookie']!;
+      print(response.headers['set-cookie']!);
+      cookie = response.headers['set-cookie']!.substring(
+          response.headers['set-cookie']!.indexOf('=') + 1,
+          response.headers['set-cookie']!.indexOf(';'));
     }
+
+    print(cookie);
 
     return Status(response.statusCode, response.body, API.transmission, "");
   }
@@ -44,16 +49,25 @@ class QTorrent {
     Response response;
 
     Map<String, String> headers = {
-      'Cookie': cookie,
+      'cookie': cookie,
     };
 
     response = await _makeRequest(HttpMethod.get, 'torrents/info', headers);
+
+    if (response.statusCode == 403) {
+      bool success = await ping().then((_) {
+        return _.code == 200;
+      });
+
+      if (!success) {
+        throw Exception('Failed to authenticate: ${response.body}');
+      }
+    }
 
     List<Torrent> torrents = [];
 
     if (response.statusCode == 200) {
       List<dynamic> json = jsonDecode(response.body);
-
       for (dynamic torrent in json) {
         TorrentStatus status = TorrentStatus.paused;
         status =
@@ -82,21 +96,28 @@ class QTorrent {
             Duration(seconds: torrent['eta']),
             torrent['num_seeds']));
       }
+      return torrents;
     }
-
-    return torrents;
+    throw Exception('Failed to get torrents: ${response.body}');
   }
 
   Future<Response> _makeRequest(HttpMethod httpMethod, String method,
       [Map<String, String> arguments = const {}]) async {
     Response? response;
 
+    arguments['Cookie'] = cookie == "" ? "" : 'SID=$cookie';
+
     if (httpMethod == HttpMethod.post) {
       await http
           .post(Uri.parse('$_url$method'), body: arguments)
           .then((_) => response = _);
     } else if (httpMethod == HttpMethod.get) {
-      await http.get(Uri.parse('$_url$method')).then((_) => response = _);
+      await http
+          .get(
+            Uri.parse('$_url$method'),
+            headers: arguments,
+          )
+          .then((_) => response = _);
     }
 
     return response!;
