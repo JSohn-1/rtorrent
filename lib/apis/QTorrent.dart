@@ -66,6 +66,7 @@ class QTorrent {
       List<dynamic> json = jsonDecode(response.body);
       for (dynamic torrent in json) {
         TorrentStatus status = TorrentStatus.paused;
+        // use switch case
         status =
             torrent['state'] == 'downloading' || torrent['state'] == 'metaDL'
                 ? TorrentStatus.downloading
