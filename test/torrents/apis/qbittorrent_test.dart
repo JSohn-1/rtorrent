@@ -31,6 +31,6 @@ void main() async {
     }
 
     expect(e, null);
-    expect(torrents[0].name, 'kali.linux-2023.3-installer-amd64.iso');
+    expect(torrents[0].name, 'kali-linux-2023.3-installer-amd64.iso');
   });
 }

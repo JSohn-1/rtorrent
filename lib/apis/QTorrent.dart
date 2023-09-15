@@ -34,13 +34,9 @@ class QTorrent {
     response = await _makeRequest(HttpMethod.post, 'auth/login', headers);
 
     if (response.statusCode == 200) {
-      print(response.headers['set-cookie']!);
-      cookie = response.headers['set-cookie']!.substring(
-          response.headers['set-cookie']!.indexOf('=') + 1,
-          response.headers['set-cookie']!.indexOf(';'));
+      cookie = response.headers['set-cookie']!
+          .substring(0, response.headers['set-cookie']!.indexOf(';'));
     }
-
-    print(cookie);
 
     return Status(response.statusCode, response.body, API.transmission, "");
   }
@@ -55,13 +51,13 @@ class QTorrent {
     response = await _makeRequest(HttpMethod.get, 'torrents/info', headers);
 
     if (response.statusCode == 403) {
-      bool success = await ping().then((_) {
-        return _.code == 200;
+      await ping().then((_) async {
+        if (_.code != 200) {
+          throw Exception('Failed to authenticate: ${response.body}');
+        }
+        response = await _makeRequest(HttpMethod.get, 'torrents/info', headers);
+        return true;
       });
-
-      if (!success) {
-        throw Exception('Failed to authenticate: ${response.body}');
-      }
     }
 
     List<Torrent> torrents = [];
@@ -105,7 +101,7 @@ class QTorrent {
       [Map<String, String> arguments = const {}]) async {
     Response? response;
 
-    arguments['Cookie'] = cookie == "" ? "" : 'SID=$cookie';
+    arguments['Cookie'] = cookie == "" ? "" : cookie;
 
     if (httpMethod == HttpMethod.post) {
       await http
