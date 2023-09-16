@@ -332,7 +332,7 @@ class TransmissionRPC {
     return jsonDecode(res!.body)['arguments']['torrents'][0];
   }
 
-  Future<List> getTorrentMultiple({List<int> ids = const []}) async {
+  Future<List<Torrent>> getTorrentMultiple({List<int> ids = const []}) async {
     // Make a map that will hold the arguments
     Map<String, dynamic> arguments = {
       'fields': [
@@ -411,36 +411,65 @@ class TransmissionRPC {
       arguments['ids'] = ids;
     }
 
-    return _makeRequest('torrent-get', arguments)
-        .then((_) => jsonDecode(_.body)['arguments']['torrents']);
-  }
-
-  Future<List<Torrent>> getAllTorrents() async {
     List<Torrent> torrents = [];
-    List<dynamic> map = await getTorrentMultiple();
 
-    for (Map<String, dynamic> torrent in map) {
-      TorrentStatus state = TorrentStatus.values[torrent['status']];
-
-      if (state == TorrentStatus.verifying) {
-        torrent['percentDone'] = torrent['recheckProgress'];
+    await _makeRequest('torrent-get', arguments)
+        .then((_) => jsonDecode(_.body)['arguments']['torrents'])
+        .then((_) {
+      List<Torrent> torrents = [];
+      for (final torrent in _) {
+        torrents.add(Torrent(
+            torrent['name'],
+            _getStatus(torrent['status']),
+            torrent['status'],
+            ((torrent['sizeWhenDone'] * torrent['percentDone']).toDouble())
+                .toInt(),
+            torrent['rateDownload'],
+            torrent['uploadedEver'],
+            torrent['rateUpload'],
+            torrent['sizeWhenDone'],
+            (_getStatus(torrent['status']) == TorrentStatus.verifying
+                    ? torrent['recheckProgress']
+                    : torrent['percentDone'])
+                .toDouble(),
+            Duration(seconds: torrent['eta']),
+            torrent['peersConnected']));
       }
+      return torrents;
+    }).then((_) => torrents);
 
-      torrents.add(Torrent(
-          torrent['name'],
-          state,
-          ((torrent['sizeWhenDone'] * torrent['percentDone']).toDouble())
-              .toInt(),
-          torrent['rateDownload'],
-          torrent['uploadedEver'],
-          torrent['rateUpload'],
-          torrent['sizeWhenDone'],
-          torrent['percentDone'].toDouble(),
-          Duration(seconds: torrent['eta']),
-          torrent['peersConnected']));
-    }
     return torrents;
   }
+
+  // Future<List<Torrent>> getAllTorrents() async {
+  //   List<Torrent> torrents = [];
+  //   List<dynamic> map = await getTorrentMultiple();
+
+  //   for (Map<String, dynamic> torrent in map) {
+  //     TorrentStatus state = TorrentStatus.values[torrent['status']];
+
+  //     if (state == TorrentStatus.verifying) {
+  //       torrent['percentDone'] = torrent['recheckProgress'];
+  //     }
+
+  //     torrents.add(Torrent(
+  //         torrent['name'],
+  //         state,
+  //         ((torrent['sizeWhenDone'] * torrent['percentDone']).toDouble())
+  //             .toInt(),
+  //         torrent['rateDownload'],
+  //         torrent['uploadedEver'],
+  //         torrent['rateUpload'],
+  //         torrent['sizeWhenDone'],
+  //         (_getStatus(torrent['status']) == TorrentStatus.verifying
+  //                 ? torrent['recheckProgress']
+  //                 : torrent['percentDone'])
+  //             .toDouble(),
+  //         Duration(seconds: torrent['eta']),
+  //         torrent['peersConnected']));
+  //   }
+  //   return torrents;
+  // }
 
   Map<String, dynamic> toMap() {
     return {
@@ -449,6 +478,24 @@ class TransmissionRPC {
       "user": _username,
       "pass": _password,
     };
+  }
+
+  TorrentStatus _getStatus(int status) {
+    switch (status) {
+      case 0:
+      case 1:
+      case 3:
+      case 5:
+        return TorrentStatus.inactive;
+      case 2:
+        return TorrentStatus.verifying;
+      case 4:
+        return TorrentStatus.downloading;
+      case 6:
+        return TorrentStatus.seeding;
+      default:
+        return TorrentStatus.inactive;
+    }
   }
 }
 

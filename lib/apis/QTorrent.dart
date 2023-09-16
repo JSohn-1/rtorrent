@@ -65,25 +65,53 @@ class QTorrent {
     if (response.statusCode == 200) {
       List<dynamic> json = jsonDecode(response.body);
       for (dynamic torrent in json) {
-        TorrentStatus status = TorrentStatus.paused;
-        // use switch case
-        status =
-            torrent['state'] == 'downloading' || torrent['state'] == 'metaDL'
-                ? TorrentStatus.downloading
-                : status;
+        TorrentStatus status = TorrentStatus.inactive;
 
-        status = torrent['state'] == 'queuedDL'
-            ? TorrentStatus.queuedToDownload
-            : status;
+        switch (torrent['state']) {
+          case 'error':
+          case 'unknown':
+            status = TorrentStatus.error;
+            break;
 
-        status =
-            torrent['state'] == 'stalledUP' || torrent['state'] == 'stalledDL'
-                ? TorrentStatus.paused
-                : status;
+          case 'downloading':
+          case 'forcedDL':
+          case 'metaDL':
+            status = TorrentStatus.downloading;
+            break;
+
+          case 'queuedDL':
+          case 'queuedUP':
+          case 'stalledUP':
+          case 'stalledDL':
+          case 'pausedUP':
+          case 'pausedDL':
+            status = TorrentStatus.inactive;
+            break;
+
+          case 'forcedUP':
+          case 'uploading':
+            status = TorrentStatus.seeding;
+            break;
+
+          case 'checkingUP':
+          case 'checkingDL':
+            status = TorrentStatus.verifying;
+            break;
+
+          case 'moving':
+          case 'allocating':
+          case 'checkingResumeData':
+            status = TorrentStatus.localchange;
+            break;
+          default:
+            status = TorrentStatus.inactive;
+            break;
+        }
 
         torrents.add(Torrent(
             torrent['name'],
             status,
+            torrent['state'],
             torrent['downloaded'],
             torrent['dlspeed'],
             torrent['uploaded'],

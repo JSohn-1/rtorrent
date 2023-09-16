@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 
 enum TorrentStatus {
   downloading,
-  queuedToDownload,
-  paused,
-  queuedToVerify,
-  verifying,
-  queuedToSeed,
   seeding,
+  inactive,
+  verifying,
+  error,
+  localchange,
 }
 
 // The torrent class which will contain all the information about the torrent that is needed for the user
@@ -15,6 +14,7 @@ class Torrent {
   late final String name;
   late final String id;
   late final TorrentStatus state;
+  late final String rawState;
   late final int downloaded;
   late final int downloadSpeed;
   late final int uploaded;
@@ -27,6 +27,7 @@ class Torrent {
   Torrent(
       this.name,
       this.state,
+      this.rawState,
       this.downloaded,
       this.downloadSpeed,
       this.uploaded,
@@ -746,14 +747,14 @@ class FittedText extends StatelessWidget {
   }
 }
 
-void main() {
-  Torrent torrent = Torrent("test", TorrentStatus.downloading, 0, 900000000, 0,
-      800000000, 0, 0, const Duration(seconds: 0), 0);
-  print(torrent.getSpeed()["upspeed"]![0]);
-  print(torrent.getSpeed()["upspeed"]![1]);
+// void main() {
+//   Torrent torrent = Torrent("test", TorrentStatus.downloading, 0, 900000000, 0,
+//       800000000, 0, 0, const Duration(seconds: 0), 0);
+//   print(torrent.getSpeed()["upspeed"]![0]);
+//   print(torrent.getSpeed()["upspeed"]![1]);
 
-  Torrent torrentTwo = Torrent("test", TorrentStatus.downloading, 1000,
-      900000000, 0, 800000000, 100000, 0, const Duration(seconds: 0), 0);
+//   Torrent torrentTwo = Torrent("test", TorrentStatus.downloading, 1000,
+//       900000000, 0, 800000000, 100000, 0, const Duration(seconds: 0), 0);
 
-  print(torrentTwo.getDownloaded());
-}
+//   print(torrentTwo.getDownloaded());
+// }

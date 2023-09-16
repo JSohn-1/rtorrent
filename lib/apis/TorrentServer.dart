@@ -58,48 +58,7 @@ class Torrents {
   Future<List<Torrent>> getAllTorrents() async {
     switch (api) {
       case API.transmission:
-        List torrents = await client.getTorrentMultiple();
-        List<Torrent> newTorrents = [];
-        for (Map<String, dynamic> torrent in torrents) {
-          TorrentStatus state = TorrentStatus.paused;
-          if (torrent['status'] == 0) {
-            state = TorrentStatus.paused;
-          } else if (torrent['status'] == 1) {
-            state = TorrentStatus.queuedToVerify;
-          } else if (torrent['status'] == 2) {
-            state = TorrentStatus.verifying;
-          } else if (torrent['status'] == 3) {
-            state = TorrentStatus.queuedToDownload;
-          } else if (torrent['status'] == 4) {
-            state = TorrentStatus.downloading;
-          } else if (torrent['status'] == 5) {
-            state = TorrentStatus.queuedToSeed;
-          } else if (torrent['status'] == 6) {
-            state = TorrentStatus.seeding;
-          }
-
-          // If the torrent is being verified, the progress is the recheckProgress
-          // Otherwise, it is the percentDone
-
-          if (state == TorrentStatus.verifying) {
-            torrent['percentDone'] = torrent['recheckProgress'];
-          }
-
-          newTorrents.add(Torrent(
-              torrent['name'],
-              state,
-              ((torrent['sizeWhenDone'] * torrent['percentDone']).toDouble())
-                  .toInt(),
-              torrent['rateDownload'],
-              torrent['uploadedEver'],
-              torrent['rateUpload'],
-              torrent['sizeWhenDone'],
-              torrent['percentDone'].toDouble(),
-              Duration(seconds: torrent['eta']),
-              torrent['peersConnected']));
-        }
-
-        return newTorrents;
+        return await client.getTorrentMultiple();
       default:
         return [];
     }
