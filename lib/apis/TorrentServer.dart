@@ -58,7 +58,7 @@ class Torrents {
   Future<List<Torrent>> getAllTorrents() async {
     switch (api) {
       case API.transmission:
-        return await client.getTorrentMultiple();
+        return await client.getAllTorrents();
       default:
         return [];
     }

@@ -413,15 +413,16 @@ class TransmissionRPC {
 
     List<Torrent> torrents = [];
 
-    await _makeRequest('torrent-get', arguments)
-        .then((_) => jsonDecode(_.body)['arguments']['torrents'])
-        .then((_) {
+    await _makeRequest('torrent-get', arguments).then((_) {
+      return jsonDecode(_.body)['arguments']['torrents'];
+    }).then((_) {
       List<Torrent> torrents = [];
       for (final torrent in _) {
+        print(torrent);
         torrents.add(Torrent(
             torrent['name'],
             _getStatus(torrent['status']),
-            torrent['status'],
+            _getStatusRaw(torrent['status']),
             ((torrent['sizeWhenDone'] * torrent['percentDone']).toDouble())
                 .toInt(),
             torrent['rateDownload'],
@@ -436,40 +437,14 @@ class TransmissionRPC {
             torrent['peersConnected']));
       }
       return torrents;
-    }).then((_) => torrents);
+    }).then((_) => torrents = _);
 
     return torrents;
   }
 
-  // Future<List<Torrent>> getAllTorrents() async {
-  //   List<Torrent> torrents = [];
-  //   List<dynamic> map = await getTorrentMultiple();
-
-  //   for (Map<String, dynamic> torrent in map) {
-  //     TorrentStatus state = TorrentStatus.values[torrent['status']];
-
-  //     if (state == TorrentStatus.verifying) {
-  //       torrent['percentDone'] = torrent['recheckProgress'];
-  //     }
-
-  //     torrents.add(Torrent(
-  //         torrent['name'],
-  //         state,
-  //         ((torrent['sizeWhenDone'] * torrent['percentDone']).toDouble())
-  //             .toInt(),
-  //         torrent['rateDownload'],
-  //         torrent['uploadedEver'],
-  //         torrent['rateUpload'],
-  //         torrent['sizeWhenDone'],
-  //         (_getStatus(torrent['status']) == TorrentStatus.verifying
-  //                 ? torrent['recheckProgress']
-  //                 : torrent['percentDone'])
-  //             .toDouble(),
-  //         Duration(seconds: torrent['eta']),
-  //         torrent['peersConnected']));
-  //   }
-  //   return torrents;
-  // }
+  Future<List<Torrent>> getAllTorrents() async {
+    return await getTorrentMultiple();
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -497,19 +472,8 @@ class TransmissionRPC {
         return TorrentStatus.inactive;
     }
   }
+
+  String _getStatusRaw(int status) {
+    return 'TODO';
+  }
 }
-
-
-  //  print(await rpc.getTorrentMultiple());
-  // Print the names of all the torrents active on the server
-  // List<dynamic> map = await rpc.getTorrentMultiple();
-  // for (var i in map) {
-  //   print(i['name']);
-  // }
-
-  // List<Map<String, dynamic>> map = await rpc.getTorrentMultiple();
-  // for(var i in map){
-  //   print(i['name']);
-  // }
-  // print(map['name']);
-

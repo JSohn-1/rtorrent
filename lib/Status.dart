@@ -32,6 +32,11 @@ class Status {
     }
     this.success = success;
   }
+
+  @override
+  String toString() {
+    return "Status: $code: $message";
+  }
 }
 
 // This is the page which will be shown if there is an error when connecting to the server. It will have a button which will allow the user to go back to the home page. It will be passed a Status object which will be used to display the error message.
