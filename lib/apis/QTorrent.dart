@@ -126,6 +126,31 @@ class QTorrent {
     throw Exception('Failed to get torrents: ${response.body}');
   }
 
+  Future<Response> addTorrentByURLSingle(
+    Uri url, {
+    bool paused = false,
+  }) async {
+    Response response;
+
+    Map<String, String> headers = {
+      'cookie': cookie,
+    };
+
+    response = await _makeRequest(HttpMethod.post, 'torrents/info', headers);
+
+    if (response.statusCode == 403) {
+      await ping().then((_) async {
+        if (_.code != 200) {
+          throw Exception('Failed to authenticate: ${response.body}');
+        }
+        response = await _makeRequest(HttpMethod.get, 'torrents/info', headers);
+        return true;
+      });
+    }
+
+    return response;
+  }
+
   Future<Response> _makeRequest(HttpMethod httpMethod, String method,
       [Map<String, String> arguments = const {}]) async {
     Response? response;
