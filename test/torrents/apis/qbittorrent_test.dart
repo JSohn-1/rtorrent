@@ -18,6 +18,8 @@ void main() async {
     expect(qTorrent.cookie != "", true);
   });
 
+// TODO: Add test, read test, modify test to use a torrent that is not downloading, remove torrent after test
+
   test('getTorrents', () async {
     Exception? e;
     List<Torrent> torrents = [];
