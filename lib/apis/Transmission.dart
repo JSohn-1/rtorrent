@@ -474,6 +474,23 @@ class TransmissionRPC {
   }
 
   String _getStatusRaw(int status) {
-    return 'TODO';
+    switch (status) {
+      case 0:
+        return "stopped";
+      case 1:
+        return "check pending";
+      case 2:
+        return "checking";
+      case 3:
+        return "download pending";
+      case 4:
+        return "downloading";
+      case 5:
+        return "seed pending";
+      case 6:
+        return "seeding";
+      default:
+        return "unknown";
+    }
   }
 }
