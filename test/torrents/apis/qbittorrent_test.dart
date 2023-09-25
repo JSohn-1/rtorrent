@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:rtorrent/Status.dart';
-import 'package:rtorrent/apis/QTorrent.dart';
+import 'package:rtorrent/apis/QTorrent/QTorrent.dart';
 import 'package:rtorrent/apis/Torrent.dart';
 
 void main() async {

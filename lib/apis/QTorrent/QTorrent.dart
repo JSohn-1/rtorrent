@@ -2,10 +2,12 @@ import 'dart:convert';
 
 import 'package:rtorrent/apis/TorrentServer.dart';
 
-import 'Torrent.dart';
-import '../Status.dart';
+import '../Torrent.dart';
+import '../../Status.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
+
+part 'QTorrentAddFile.dart';
 
 enum HttpMethod {
   post,
@@ -30,8 +32,8 @@ class QTorrent {
       'password': _password,
     };
 
-    // Get the auth cookie
-    response = await _makeRequest(HttpMethod.post, 'auth/login', headers);
+    response =
+        await _makeRequest(HttpMethod.post, 'auth/login', arguments: headers);
 
     if (response.statusCode == 200) {
       cookie = response.headers['set-cookie']!
@@ -48,14 +50,16 @@ class QTorrent {
       'cookie': cookie,
     };
 
-    response = await _makeRequest(HttpMethod.get, 'torrents/info', headers);
+    response =
+        await _makeRequest(HttpMethod.get, 'torrents/info', arguments: headers);
 
     if (response.statusCode == 403) {
       await ping().then((_) async {
         if (_.code != 200) {
           throw Exception('Failed to authenticate: ${response.body}');
         }
-        response = await _makeRequest(HttpMethod.get, 'torrents/info', headers);
+        response = await _makeRequest(HttpMethod.get, 'torrents/info',
+            arguments: headers);
         return true;
       });
     }
@@ -126,33 +130,9 @@ class QTorrent {
     throw Exception('Failed to get torrents: ${response.body}');
   }
 
-  Future<Response> addTorrentByURLSingle(
-    Uri url, {
-    bool paused = false,
-  }) async {
-    Response response;
-
-    Map<String, String> headers = {
-      'cookie': cookie,
-    };
-
-    response = await _makeRequest(HttpMethod.post, 'torrents/info', headers);
-
-    if (response.statusCode == 403) {
-      await ping().then((_) async {
-        if (_.code != 200) {
-          throw Exception('Failed to authenticate: ${response.body}');
-        }
-        response = await _makeRequest(HttpMethod.get, 'torrents/info', headers);
-        return true;
-      });
-    }
-
-    return response;
-  }
-
   Future<Response> _makeRequest(HttpMethod httpMethod, String method,
-      [Map<String, String> arguments = const {}]) async {
+      {Map<String, String> arguments = const {},
+      dynamic body = const {}}) async {
     Response? response;
 
     arguments['Cookie'] = cookie == "" ? "" : cookie;
@@ -169,7 +149,13 @@ class QTorrent {
           )
           .then((_) => response = _);
     }
-
+    if (response!.statusCode == 403) {
+      await ping();
+      if (cookie == "") {
+        throw Exception('Failed to authenticate: ${response!.body}');
+      }
+      return _makeRequest(httpMethod, method, arguments: arguments);
+    }
     return response!;
   }
 }
