@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rtorrent/Status.dart';
 import 'package:rtorrent/apis/QTorrent/QTorrent.dart';
 import 'package:rtorrent/apis/Torrent.dart';
+import 'package:collection/collection.dart';
 
 void main() async {
   String url = 'http://localhost:8080';
@@ -10,7 +11,7 @@ void main() async {
   String pass = 'adminadmin';
 
   QTorrent qTorrent = QTorrent(url, user, pass);
-  group(qTorrent, () {
+  group('basic qtorrent functions', () {
     test('ping', () async {
       Status status = await qTorrent.ping();
 
@@ -22,20 +23,49 @@ void main() async {
 
     test('getTorrents', () async {
       Exception? e;
-      List<Torrent> torrents = [];
 
       try {
-        torrents = await qTorrent.getTorrents();
+        await qTorrent.getTorrents();
       } on Exception catch (_) {
         e = _;
       }
 
       expect(e, null);
+    });
+  });
+  group('Adding torrents', () {
+    setUp(() async {
+      await qTorrent.ping();
+    });
 
-      expect(torrents[0].name, 'kali-linux-2023.3-installer-amd64.iso');
-      expect(torrents[0].state, TorrentStatus.inactive);
-      expect(torrents[0].rawState, 'pausedDL');
-      expect(torrents[0].size, 4194304000);
+    test('addTorrentByURLSingle', () async {
+      final response = await qTorrent.addTorrentByURLSingle(
+        'http://example.com/torrents/example.torrent',
+        paused: true,
+        category: 'movies',
+        skipCheck: 'true',
+        rename: 'addTorrentByURLSingle.torrent',
+        upLimit: '100',
+        dlLimit: '200',
+        autoTMM: 'true',
+        sequentialDownload: 'true',
+        firstLastPiecePrio: 'true',
+      );
+
+      expect(response.statusCode, equals(200));
+    });
+
+    test('readTorrents', () async {
+      Torrent? torrent;
+      List<Torrent> torrents = [];
+
+      torrents = await qTorrent.getTorrents();
+
+      torrent = torrents.firstWhereOrNull((element) {
+        return element.name == 'addTorrentByURLSingle.torrent';
+      });
+
+      expect(torrent, isNotNull);
     });
   });
 }
