@@ -1,9 +1,6 @@
 part of 'QTorrent.dart';
 
 extension QTorrentAddFile on QTorrent {
-  static const String _boundary =
-      '--------------------------012345678901234567890123456789';
-
   Future<Response> addTorrentByURLSingle(
     String url, {
     bool paused = false,
@@ -21,7 +18,7 @@ extension QTorrentAddFile on QTorrent {
     Response response;
 
     Map<String, String> headers = {
-      'Content-Type': 'multipart/form-data; boundary=$_boundary',
+      'urls': url,
       if (paused) 'paused': 'true',
       if (savePath != null) 'savepath': savePath,
       if (category != null) 'category': category,
@@ -35,13 +32,8 @@ extension QTorrentAddFile on QTorrent {
       if (firstLastPiecePrio != null) 'firstLastPiecePrio': firstLastPiecePrio,
     };
 
-    String body = '--$_boundary\r\n'
-        'Content-Disposition: form-data; name="urls"\r\n\r\n'
-        '$url\r\n'
-        '--$_boundary--\r\n';
-
-    response = await _makeRequest(HttpMethod.post, 'torrents/add',
-        arguments: headers, body: body);
+    response =
+        await _makeRequest(HttpMethod.post, 'torrents/add', arguments: headers);
 
     return response;
   }

@@ -111,7 +111,6 @@ class QTorrent {
             status = TorrentStatus.inactive;
             break;
         }
-
         torrents.add(Torrent(
             torrent['name'],
             status,
@@ -121,7 +120,7 @@ class QTorrent {
             torrent['uploaded'],
             torrent['upspeed'],
             torrent['size'],
-            torrent['progress'],
+            torrent['progress'].toDouble(),
             Duration(seconds: torrent['eta']),
             torrent['num_seeds']));
       }
@@ -131,8 +130,7 @@ class QTorrent {
   }
 
   Future<Response> _makeRequest(HttpMethod httpMethod, String method,
-      {Map<String, String> arguments = const {},
-      dynamic body = const {}}) async {
+      {Map<String, String> arguments = const {}}) async {
     Response? response;
 
     arguments['Cookie'] = cookie == "" ? "" : cookie;
