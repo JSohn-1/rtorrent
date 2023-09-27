@@ -129,6 +129,35 @@ class QTorrent {
     throw Exception('Failed to get torrents: ${response.body}');
   }
 
+  Future<Status> removeTorrent(String hash, bool deleteData) async {
+    Response response;
+
+    Map<String, String> headers = {
+      'hashes': hash,
+      'deleteFiles': deleteData.toString(),
+    };
+
+    response = await _makeRequest(HttpMethod.post, 'torrents/delete',
+        arguments: headers);
+
+    return _reponseParser(response);
+  }
+
+  Future<Status> removeMultipleTorrent(
+      List<String> hashes, bool deleteData) async {
+    Response response;
+
+    Map<String, String> headers = {
+      'hashes': hashes.join('|'),
+      'deleteFiles': deleteData.toString(),
+    };
+
+    response = await _makeRequest(HttpMethod.post, 'torrents/delete',
+        arguments: headers);
+
+    return _reponseParser(response);
+  }
+
   Future<Response> _makeRequest(HttpMethod httpMethod, String method,
       {Map<String, String> arguments = const {}}) async {
     Response? response;
@@ -155,5 +184,9 @@ class QTorrent {
       return _makeRequest(httpMethod, method, arguments: arguments);
     }
     return response!;
+  }
+
+  Status _reponseParser(Response response) {
+    return Status(response.statusCode, response.body, API.qBittorrent, "");
   }
 }
