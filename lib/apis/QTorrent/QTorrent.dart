@@ -36,6 +36,7 @@ class QTorrent {
         await _makeRequest(HttpMethod.post, 'auth/login', arguments: headers);
 
     if (response.statusCode == 200) {
+      print(response.headers);
       cookie = response.headers['set-cookie']!
           .substring(0, response.headers['set-cookie']!.indexOf(';'));
     }
@@ -162,13 +163,15 @@ class QTorrent {
       {Map<String, String> arguments = const {}}) async {
     Response? response;
 
-    arguments['Cookie'] = cookie == "" ? "" : cookie;
+    Map<String, String> headers = {'Cookie': cookie == "" ? "" : cookie};
 
     if (httpMethod == HttpMethod.post) {
       await http
-          .post(Uri.parse('$_url$method'), body: arguments)
+          .post(Uri.parse('$_url$method'), headers: headers, body: arguments)
           .then((_) => response = _);
     } else if (httpMethod == HttpMethod.get) {
+      arguments['Cookie'] = headers['Cookie']!;
+
       await http
           .get(
             Uri.parse('$_url$method'),
@@ -181,6 +184,7 @@ class QTorrent {
       if (cookie == "") {
         throw Exception('Failed to authenticate: ${response!.body}');
       }
+
       return _makeRequest(httpMethod, method, arguments: arguments);
     }
     return response!;

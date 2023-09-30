@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rtorrent/Status.dart';
 import 'package:rtorrent/apis/QTorrent/QTorrent.dart';
 import 'package:rtorrent/apis/Torrent.dart';
+import 'test_helper.dart';
 import 'package:collection/collection.dart';
 
 void main() async {
@@ -40,11 +41,11 @@ void main() async {
 
     test('addTorrentByURLSingle', () async {
       final response = await qTorrent.addTorrentByURLSingle(
-        'http://example.com/torrents/example.torrent',
+        TestHelper.url,
         paused: true,
         category: 'movies',
         skipCheck: 'true',
-        rename: 'addTorrentByURLSingle.torrent',
+        rename: 'addTorrentByURLSingle',
         upLimit: '100',
         dlLimit: '200',
         autoTMM: 'true',
@@ -62,7 +63,7 @@ void main() async {
       torrents = await qTorrent.getTorrents();
 
       torrent = torrents.firstWhereOrNull((element) {
-        return element.name == 'addTorrentByURLSingle.torrent';
+        return element.name == 'addTorrentByURLSingle';
       });
 
       expect(torrent, isNotNull);
