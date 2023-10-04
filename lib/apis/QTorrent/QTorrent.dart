@@ -35,8 +35,7 @@ class QTorrent {
     response =
         await _makeRequest(HttpMethod.post, 'auth/login', arguments: headers);
 
-    if (response.statusCode == 200) {
-      print(response.headers);
+    if (response.statusCode == 200 && response.headers['set-cookie'] != null) {
       cookie = response.headers['set-cookie']!
           .substring(0, response.headers['set-cookie']!.indexOf(';'));
     }

@@ -57,6 +57,7 @@ void main() async {
     });
 
     test('readTorrents', () async {
+      await Future.delayed(const Duration(seconds: 1));
       Torrent? torrent;
       List<Torrent> torrents = [];
 
