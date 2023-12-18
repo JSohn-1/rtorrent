@@ -421,6 +421,7 @@ class TransmissionRPC {
         print(torrent);
         torrents.add(Torrent(
             torrent['name'],
+            torrent['id'],
             _getStatus(torrent['status']),
             _getStatusRaw(torrent['status']),
             ((torrent['sizeWhenDone'] * torrent['percentDone']).toDouble())

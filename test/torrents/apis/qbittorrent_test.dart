@@ -34,7 +34,7 @@ void main() async {
       expect(e, null);
     });
   });
-  group('Adding torrents', () {
+  group('Adding torrent (individual)', () {
     setUp(() async {
       await qTorrent.ping();
     });
@@ -68,6 +68,39 @@ void main() async {
       });
 
       expect(torrent, isNotNull);
+    });
+
+    test('removeTorrents', () async {
+      await Future.delayed(const Duration(seconds: 1));
+      Torrent? torrent;
+      List<Torrent> torrents = [];
+
+      torrents = await qTorrent.getTorrents();
+
+      torrent = torrents.firstWhereOrNull((element) {
+        return element.name == 'addTorrentByURLSingle';
+      });
+
+      expect(torrent, isNotNull);
+
+      Status? response;
+
+      if (torrent != null) {
+        response = await qTorrent.removeTorrent(torrent.id, true);
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
+      torrents = await qTorrent.getTorrents();
+
+      torrent = torrents.firstWhereOrNull((element) {
+        return element.name == 'addTorrentByURLSingle';
+      });
+
+      expect(torrent, isNull);
+      expect(response, isNotNull);
+      if (response != null) {
+        expect(response.code, equals(200));
+      }
     });
   });
 }

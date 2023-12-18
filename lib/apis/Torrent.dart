@@ -26,6 +26,7 @@ class Torrent {
 
   Torrent(
       this.name,
+      this.id,
       this.state,
       this.rawState,
       this.downloaded,

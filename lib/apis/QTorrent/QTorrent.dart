@@ -113,6 +113,7 @@ class QTorrent {
         }
         torrents.add(Torrent(
             torrent['name'],
+            torrent['hash'],
             status,
             torrent['state'],
             torrent['downloaded'],
@@ -127,6 +128,20 @@ class QTorrent {
       return torrents;
     }
     throw Exception('Failed to get torrents: ${response.body}');
+  }
+
+  Future<Status> modifyTorrent(String hash, Map arguments) async {
+    Response response;
+
+    Map<String, String> headers = {
+      'hash': hash,
+      ...arguments,
+    };
+
+    response = await _makeRequest(HttpMethod.post, 'torrents/setProps',
+        arguments: headers);
+
+    return _reponseParser(response);
   }
 
   Future<Status> removeTorrent(String hash, bool deleteData) async {
