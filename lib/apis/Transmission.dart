@@ -418,7 +418,6 @@ class TransmissionRPC {
     }).then((_) {
       List<Torrent> torrents = [];
       for (final torrent in _) {
-        print(torrent);
         torrents.add(Torrent(
             torrent['name'],
             torrent['id'],
@@ -435,7 +434,8 @@ class TransmissionRPC {
                     : torrent['percentDone'])
                 .toDouble(),
             Duration(seconds: torrent['eta']),
-            torrent['peersConnected']));
+            torrent['peersConnected'],
+            torrent['uploadRatio']));
       }
       return torrents;
     }).then((_) => torrents = _);

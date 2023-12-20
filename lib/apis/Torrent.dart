@@ -23,6 +23,7 @@ class Torrent {
   late final double progress;
   late final Duration eta;
   late final int peersConnected;
+  late final double ratio;
 
   Torrent(
       this.name,
@@ -36,7 +37,8 @@ class Torrent {
       this.size,
       this.progress,
       this.eta,
-      this.peersConnected);
+      this.peersConnected,
+      this.ratio);
 
   Map<String, List<String>> getSpeed() {
     // Find the speed in the form of GB/s MB/s or KB/s depending on the speed with the number going to one decimal place

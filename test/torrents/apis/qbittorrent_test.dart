@@ -20,8 +20,6 @@ void main() async {
       expect(qTorrent.cookie != "", true);
     });
 
-// TODO: Add test, read test, modify test to use a torrent that is not downloading, remove torrent after test
-
     test('getTorrents', () async {
       Exception? e;
 
@@ -70,7 +68,7 @@ void main() async {
       expect(torrent, isNotNull);
     });
 
-    test('removeTorrents', () async {
+    test('renameTorrents', () async {
       await Future.delayed(const Duration(seconds: 1));
       Torrent? torrent;
       List<Torrent> torrents = [];
@@ -79,6 +77,33 @@ void main() async {
 
       torrent = torrents.firstWhereOrNull((element) {
         return element.name == 'addTorrentByURLSingle';
+      });
+
+      expect(torrent, isNotNull);
+
+      if (torrent != null) {
+        await qTorrent.rename(torrent.id, 'renamed');
+      }
+
+      await Future.delayed(const Duration(seconds: 1));
+      torrents = await qTorrent.getTorrents();
+
+      torrent = torrents.firstWhereOrNull((element) {
+        return element.name == 'renamed';
+      });
+
+      expect(torrent, isNotNull);
+    });
+
+    test('removeTorrents', () async {
+      await Future.delayed(const Duration(seconds: 1));
+      Torrent? torrent;
+      List<Torrent> torrents = [];
+
+      torrents = await qTorrent.getTorrents();
+
+      torrent = torrents.firstWhereOrNull((element) {
+        return element.name == 'renamed';
       });
 
       expect(torrent, isNotNull);

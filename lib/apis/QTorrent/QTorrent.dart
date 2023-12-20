@@ -8,6 +8,7 @@ import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 
 part 'QTorrentAddFile.dart';
+part 'Modify.dart';
 
 enum HttpMethod {
   post,
@@ -123,7 +124,8 @@ class QTorrent {
             torrent['size'],
             torrent['progress'].toDouble(),
             Duration(seconds: torrent['eta']),
-            torrent['num_seeds']));
+            torrent['num_seeds'],
+            torrent['ratio'].toDouble(),));
       }
       return torrents;
     }
